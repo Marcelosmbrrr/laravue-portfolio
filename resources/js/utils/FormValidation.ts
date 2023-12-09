@@ -13,7 +13,7 @@ export function formValidation(value: string, type: string): IValidation {
         if (!value) {
             return {
                 error: true,
-                message: 'This field is required'
+                message: 'Campo obrigatório.'
             }
         }
     }
@@ -22,7 +22,7 @@ export function formValidation(value: string, type: string): IValidation {
         if (!regexEmail.test(value.toString())) {
             return {
                 error: true,
-                message: 'This field must be a valid email'
+                message: 'E-mail inválido.'
             }
         }
     }
@@ -31,7 +31,7 @@ export function formValidation(value: string, type: string): IValidation {
         if (isNaN(Number(value))) {
             return {
                 error: true,
-                message: 'This field must be a number'
+                message: 'Este campo deve ser um número.'
             }
         }
     }
@@ -41,7 +41,7 @@ export function formValidation(value: string, type: string): IValidation {
         if (value.length < Number(min)) {
             return {
                 error: true,
-                message: `This field must be greater than ${min}`
+                message: `Deve ser maior do que ${min}`
             }
         }
     }
@@ -51,7 +51,7 @@ export function formValidation(value: string, type: string): IValidation {
         if (value.length > Number(max)) {
             return {
                 error: true,
-                message: `This field must be less than ${max}`
+                message: `Deve ser menor do que ${max}`
             }
         }
     }
@@ -62,7 +62,7 @@ export function formValidation(value: string, type: string): IValidation {
         if (value1 !== value2) {
             return {
                 error: true,
-                message: "The fields are incompatible"
+                message: "Os campos são incompatíveis."
             }
         }
     }
