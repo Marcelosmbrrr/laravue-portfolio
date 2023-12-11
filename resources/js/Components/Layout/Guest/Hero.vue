@@ -17,7 +17,7 @@
             </a>
         </div>
         <div class="mt-10 lg:mt-0 lg:col-span-5 lg:flex">
-            <img src="assets/images/projects/no-image.jpg" alt="hero-draw">
+            <img src="assets/images/hero-logo/praise.png" class="hover:scale-105 transition duration-500 ease-in-out transform" alt="hero-draw">
         </div>
     </section>
 </template>

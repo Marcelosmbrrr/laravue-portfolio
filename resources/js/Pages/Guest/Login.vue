@@ -1,4 +1,5 @@
 <template>
+     <Head title="Login" />
     <section class="bg-gray-50 dark:bg-gray-900">
         <div class="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
             <div class="flex items-center mb-5">
@@ -7,16 +8,19 @@
                 </span>
                 <span class="self-center text-emerald-500 text-2xl font-semibold whitespace-nowrap">smbr</span>
             </div>
-            <div class="w-full bg-white rounded-lg dark:border md:mt-0 sm:max-w-md xl:p-0 dark:border-gray-700 shadow-[5px_5px_rgba(0,_98,_90,_0.4),_10px_10px_rgba(0,_98,_90,_0.3),_15px_15px_rgba(0,_98,_90,_0.2),_20px_20px_rgba(0,_98,_90,_0.1),_25px_25px_rgba(0,_98,_90,_0.05)]">
+            <div
+                class="w-full bg-white rounded-lg dark:border md:mt-0 sm:max-w-md xl:p-0 dark:border-gray-700 shadow-[5px_5px_rgba(0,_98,_90,_0.4),_10px_10px_rgba(0,_98,_90,_0.3),_15px_15px_rgba(0,_98,_90,_0.2),_20px_20px_rgba(0,_98,_90,_0.1),_25px_25px_rgba(0,_98,_90,_0.05)]">
                 <div class="p-6 space-y-4 md:space-y-6 sm:p-8">
                     <h1 class="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl">
                         Acesso de administrador
                     </h1>
                     <form class="space-y-4 md:space-y-6" @submit.prevent="submit">
                         <div>
-                            <label for="username" class="block mb-2 text-sm font-medium text-gray-900">Nome de Usuário</label>
+                            <label for="username" class="block mb-2 text-sm font-medium text-gray-900">Nome de
+                                Usuário</label>
                             <input type="text" name="username" id="username" v-model="form.username.value"
-                                placeholder="Informe o nome de usuário" class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-emerald-600 focus:border-emerald-600 block w-full p-2.5">
+                                placeholder="Informe o nome de usuário"
+                                class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-emerald-600 focus:border-emerald-600 block w-full p-2.5">
                             <span class="text-sm text-red-500">{{ formErrors.username.message }}</span>
                         </div>
                         <div>
@@ -50,9 +54,12 @@
 
 <script setup lang="ts">
 import * as Vue from 'vue';
+import { Head } from '@inertiajs/vue3';
 import { useToast } from "vue-toastification";
+import { useAuth } from '@/store/store';
 import TagIcon from '@/Components/Icons/TagIcon.vue';
 import { formValidation } from '@/utils/formValidation';
+import { api } from '@/utils/Api';
 
 interface IForm {
     username: { value: string, type: string };
@@ -76,6 +83,7 @@ const formErrors = Vue.reactive<IFormErrors>({
     password: { error: false, message: '' },
 });
 
+const { login } = useAuth();
 const pending = Vue.ref<boolean>(false);
 const toast = useToast();
 
@@ -97,7 +105,7 @@ async function submit() {
 
 async function requestServer() {
     try {
-        //
+        await login({ username: form.username.value, password: form.password.value, remember: form.remember });
     } catch (e) {
         requestError(e);
     }

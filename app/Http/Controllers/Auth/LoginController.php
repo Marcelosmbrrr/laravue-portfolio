@@ -10,6 +10,7 @@ class LoginController extends Controller
 {
     public function __invoke(LoginRequest $request)
     {
+        dd("saddas");
         $login = Auth::attempt($request->validated());
 
         if (!$login) {
