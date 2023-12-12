@@ -18,7 +18,7 @@ export const useAuth = Pinia.defineStore('auth', () => {
     });
 
     async function getSessionData() {
-        if (localStorage.getItem('user-auth')) {
+        if (localStorage.getItem('auth')) {
             try {
                 const { data } = await api.get('api/session');
                 Object.assign(user, data.user);
@@ -32,10 +32,10 @@ export const useAuth = Pinia.defineStore('auth', () => {
     async function login(form: { username: string, password: string, remember: boolean }) {
         try {
             const { data } = await api.post('api/login', form);
-            localStorage.setItem('user-auth', JSON.stringify(data));
+            localStorage.setItem('auth', JSON.stringify(data));
             Object.assign(user, data.user);
             is_authenticated.value = true;
-            router.get("dashboard");
+            router.get("projects");
         } catch (e) {
             throw e;
         }
@@ -44,9 +44,9 @@ export const useAuth = Pinia.defineStore('auth', () => {
     async function logout() {
         try {
             await api.post('api/logout');
-            localStorage.removeItem('user-auth');
+            localStorage.removeItem('auth');
             is_authenticated.value = false;
-            router.get("/");
+            router.get("/login");
         } catch (e) {
             throw e;
         }

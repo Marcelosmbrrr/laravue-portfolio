@@ -7,10 +7,11 @@ Route::get('/', HomeController::class)->name('home');
 Route::inertia('/login', 'Guest/Login')->name('login');
 
 Route::middleware('auth')->group(function () {
-    Route::inertia('/dashboard', 'Authenticated/Dashboard');
-    Route::inertia('/profile', 'Authenticated/Profile');
-    Route::inertia('/projects', 'Authenticated/Projects');
+    Route::inertia('/posts', 'Administration/Posts');
+    Route::inertia('/projects', 'Administration/Projects');
+    Route::inertia('/technologies', 'Administration/Technologies');
 });
+
 
 require __DIR__ . '/auth.php';
 require __DIR__ . '/admin.php';

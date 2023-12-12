@@ -10,7 +10,6 @@ class LoginController extends Controller
 {
     public function __invoke(LoginRequest $request)
     {
-        dd("saddas");
         $login = Auth::attempt($request->validated());
 
         if (!$login) {
@@ -23,7 +22,6 @@ class LoginController extends Controller
 
         return response([
             'user' => [
-                "name" => Auth::user()->name,
                 "username" => Auth::user()->username
             ],
         ], 200);
