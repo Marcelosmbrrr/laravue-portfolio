@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests\Administration\Posts;
+namespace App\Http\Requests\Administration\Technologies;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdatePostRequest extends FormRequest
+class UpdateTechnologyRequest extends FormRequest
 {
     public function authorize(): bool
     {

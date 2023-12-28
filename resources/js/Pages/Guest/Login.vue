@@ -105,8 +105,10 @@ async function submit() {
 
 async function requestServer() {
     try {
+        pending.value = true;
         await login({ username: form.username.value, password: form.password.value, remember: form.remember });
     } catch (e) {
+        pending.value = false;
         requestError(e);
     }
 }

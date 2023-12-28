@@ -52,21 +52,24 @@
                         <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
                             <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                                 <tr>
-                                    <th scope="col" class="px-4 py-3">ID</th>
+                                    <th scope="col" class="px-4 py-3">#</th>
                                     <th scope="col" class="px-4 py-3">Fase</th>
                                     <th scope="col" class="px-4 py-3">Nome</th>
                                     <th scope="col" class="px-4 py-3">Descrição</th>
-                                    <th scope="col" class="px-4 py-3">Tecnologias</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr class="border-b dark:border-gray-700">
-                                    <th scope="row"
-                                        class="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">1</th>
-                                    <td class="px-4 py-3">PC</td>
-                                    <td class="px-4 py-3">PC</td>
-                                    <td class="px-4 py-3">Apple</td>
-                                    <td class="px-4 py-3">300</td>
+                                <tr v-if="!pending && projects.length > 0" v-for="project in projects" class="border-b dark:border-gray-700">
+                                    <td class="px-4 py-3">
+                                        <input :id="String(project.id)" @change="onSelect" type="checkbox" :checked="selections.map((project) => project.id).includes(project.id)"
+                                            class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                                    </td>
+                                    <td class="px-4 py-3">{{ project.phase }}</td>
+                                    <td class="px-4 py-3">{{ project.name }}</td>
+                                    <td class="px-4 py-3">{{ project.description }}</td>
+                                </tr>
+                                <tr v-if="!pending && projects.length === 0" class="border-b dark:border-gray-700">
+                                    <td colspan="4" class="px-4 py-3 text-center">Nenhum projeto encontrado</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -75,9 +78,9 @@
                         class="flex flex-col md:flex-row justify-between items-start md:items-center space-y-3 md:space-y-0 p-4">
                         <span class="text-sm font-normal text-gray-500 dark:text-gray-400">
                             Showing
-                            <span class="font-semibold text-gray-900 dark:text-white">1-10</span>
+                            <span class="font-semibold text-gray-900 dark:text-white">1-{{ limit }}</span>
                             of
-                            <span class="font-semibold text-gray-900 dark:text-white">1000</span>
+                            <span class="font-semibold text-gray-900 dark:text-white">{{ totalPages }}</span>
                         </span>
                         <ul class="inline-flex items-stretch -space-x-px">
                             <li @click="onPreviousPage"
@@ -114,6 +117,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 
 interface IProject {
     id: number;
+    phase: string;
     name: string;
     description: string;
     created_at: string;
@@ -121,32 +125,36 @@ interface IProject {
 }
 
 const projects = Vue.ref<IProject[]>([]);
+const selections = Vue.ref<IProject[]>([]);
 const pending = Vue.ref<boolean>(false);
 const limit = Vue.ref<number>(10);
 const page = Vue.ref<number>(1);
 const reload = Vue.ref<boolean>(false);
-const filter = Vue.ref<"user" | "admin">("user");
 const totalPages = Vue.ref<number>(0);
 
 Vue.onMounted(() => {
-    fetchUsers();
+    fetchProjects();
 });
 
 Vue.watch([limit, page, reload], () => {
-    fetchUsers();
+    fetchProjects();
 });
 
-async function fetchUsers() {
+async function fetchProjects() {
     try {
         pending.value = true;
-        const response = await api.get(`api/admin/users?limit=${limit.value}&page=${page.value}&filter=${filter.value}`);
-        projects.value = response.data.users;
-        totalPages.value = response.data.last_page;
+        const response = await api.get(`api/projects?limit=${limit.value}&page=${page.value}`);
+        projects.value = response.data.projects;
+        totalPages.value = response.data.pagination.pages;
     } catch (error) {
         console.log(error);
     } finally {
         pending.value = false;
     }
+}
+
+function onSelect(e: Event) {
+    console.log(e.currentTarget.id);
 }
 
 function onNextPage() {

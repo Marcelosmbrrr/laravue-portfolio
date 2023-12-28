@@ -11,6 +11,6 @@ Route::prefix('api')->group(function () {
     Route::middleware('auth')->group(function () {
         Route::apiResource('/posts', PostsController::class);
         Route::apiResource('/projects', ProjectsController::class);
-        Route::apiResource('/technologies', TechnologiesController::class);
+        Route::apiResource('/techs', TechnologiesController::class);
     });
 });

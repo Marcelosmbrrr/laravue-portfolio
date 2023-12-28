@@ -52,19 +52,24 @@
                         <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
                             <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                                 <tr>
-                                    <th scope="col" class="px-4 py-3">ID</th>
+                                    <th scope="col" class="px-4 py-3">#</th>
                                     <th scope="col" class="px-4 py-3">Nome</th>
                                     <th scope="col" class="px-4 py-3">Descrição</th>
-                                    <th scope="col" class="px-4 py-3">Tecnologias</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr class="border-b dark:border-gray-700">
-                                    <th scope="row"
-                                        class="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">1</th>
-                                    <td class="px-4 py-3">PC</td>
-                                    <td class="px-4 py-3">PC</td>
-                                    <td class="px-4 py-3">Apple</td>
+                                <tr v-if="!pending && techs.length > 0" v-for="tech in techs"
+                                    class="border-b dark:border-gray-700">
+                                    <td class="px-4 py-3">
+                                        <input :id="String(tech.id)" @change="onSelect" type="checkbox"
+                                            :checked="selections.map((tech) => tech.id).includes(tech.id)"
+                                            class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                                    </td>
+                                    <td class="px-4 py-3">{{ tech.name }}</td>
+                                    <td class="px-4 py-3">{{ tech.description }}</td>
+                                </tr>
+                                <tr v-if="!pending && techs.length === 0" class="border-b dark:border-gray-700">
+                                    <td colspan="4" class="px-4 py-3 text-center">Nenhuma tecnologia encontrado</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -73,9 +78,9 @@
                         class="flex flex-col md:flex-row justify-between items-start md:items-center space-y-3 md:space-y-0 p-4">
                         <span class="text-sm font-normal text-gray-500 dark:text-gray-400">
                             Showing
-                            <span class="font-semibold text-gray-900 dark:text-white">1-10</span>
+                            <span class="font-semibold text-gray-900 dark:text-white">1-{{ limit }}</span>
                             of
-                            <span class="font-semibold text-gray-900 dark:text-white">1000</span>
+                            <span class="font-semibold text-gray-900 dark:text-white">{{ totalPages }}</span>
                         </span>
                         <ul class="inline-flex items-stretch -space-x-px">
                             <li @click="onPreviousPage"
@@ -110,41 +115,46 @@ import { api } from '@/utils/Api';
 import { Head } from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 
-interface IProject {
+interface ITech {
     id: number;
     name: string;
     description: string;
+    icon: string[];
     created_at: string;
     updated_at: string;
 }
 
-const projects = Vue.ref<IProject[]>([]);
+const techs = Vue.ref<ITech[]>([]);
+const selections = Vue.ref<ITech[]>([]);
 const pending = Vue.ref<boolean>(false);
 const limit = Vue.ref<number>(10);
 const page = Vue.ref<number>(1);
 const reload = Vue.ref<boolean>(false);
-const filter = Vue.ref<"user" | "admin">("user");
 const totalPages = Vue.ref<number>(0);
 
 Vue.onMounted(() => {
-    fetchUsers();
+    fetchTechs();
 });
 
 Vue.watch([limit, page, reload], () => {
-    fetchUsers();
+    fetchTechs();
 });
 
-async function fetchUsers() {
+async function fetchTechs() {
     try {
         pending.value = true;
-        const response = await api.get(`api/admin/users?limit=${limit.value}&page=${page.value}&filter=${filter.value}`);
-        projects.value = response.data.users;
-        totalPages.value = response.data.last_page;
+        const response = await api.get(`api/techs?limit=${limit.value}&page=${page.value}`);
+        techs.value = response.data.techs;
+        totalPages.value = response.data.pagination.pages;
     } catch (error) {
         console.log(error);
     } finally {
         pending.value = false;
     }
+}
+
+function onSelect(e: Event) {
+    console.log(e.currentTarget.id);
 }
 
 function onNextPage() {

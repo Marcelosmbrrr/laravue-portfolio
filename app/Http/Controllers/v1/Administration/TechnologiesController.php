@@ -4,46 +4,48 @@ namespace App\Http\Controllers\v1\Administration;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Models\Technology;
+use App\Http\Requests\Administration\Technologies\CreateTechnologyRequest;
+use App\Http\Requests\Administration\Technologies\UpdateTechnologyRequest;
+use App\Http\Resources\Administration\TechnologiesResource;
 
 class TechnologiesController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+    public function __construct(Technology $technologyModel)
+    {
+        $this->technologyModel = $technologyModel;
+    }
+
     public function index()
     {
-        //
+        $limit = request()->limit;
+        $page = request()->page;
+
+        $data = $this->technologyModel->paginate($limit, ['*'], 'technologies', $page);
+
+        return response(new TechnologiesResource($data), 200);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+    public function store(CreateTechnologyRequest $request)
     {
-        //
+        $tech = $this->technologyModel->create($request->validated());
+
+        return response("Tecnologia criada com sucesso!", 201);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    public function update(UpdateTechnologyRequest $request, string $id)
     {
-        //
+        $tech = $this->technologyModel->find($id);
+        $tech->update($request->validated());
+
+        return response("Tecnologia atualizada com sucesso!", 200);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(string $id)
     {
-        //
+        $tech = $this->technologyModel->find($id);
+        $tech->delete();
+
+        return response("Tecnologia deletada com sucesso!", 200);
     }
 }
