@@ -12,15 +12,15 @@ class PostsResource extends ResourceCollection
 
     public function toArray(Request $request): array
     {
+        $this->payload["posts"] = [];
         foreach ($this->collection as $index => $post) {
 
             $this->payload["posts"][$index] = [
                 "id" => $post->id,
-                "phase" => $post->phase,
-                "image_url" => Storage::disk('public')->url("images/posts/" . $post->uuid . ".png"),
                 "name" => $post->name,
+                "image_url" => Storage::disk('public')->url("images/posts/" . $post->uuid . ".png"),
                 "description" => $post->description,
-                "technology" => $post->technology,
+                "content" => json_decode($post->content),
                 "created_at" => $post->created_at,
                 "updated_at" => $post->updated_at
             ];

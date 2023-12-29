@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\v1\Administration;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Models\Technology;
 use App\Http\Requests\Administration\Technologies\CreateTechnologyRequest;
 use App\Http\Requests\Administration\Technologies\UpdateTechnologyRequest;
@@ -20,8 +19,11 @@ class TechnologiesController extends Controller
     {
         $limit = request()->limit;
         $page = request()->page;
+        $search = request()->search ?? null;
 
-        $data = $this->technologyModel->paginate($limit, ['*'], 'technologies', $page);
+        $data = $this->technologyModel->when($search, function ($query) use ($search) {
+            $query->where('name', 'like', "%{$search}%")->orWhere('description', 'like', "%{$search}%")->orWhere('phase', 'like', "%{$search}%");
+        })->paginate($limit, ['*'], 'technologies', $page);
 
         return response(new TechnologiesResource($data), 200);
     }

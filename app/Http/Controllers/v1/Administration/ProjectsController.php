@@ -4,6 +4,7 @@ namespace App\Http\Controllers\v1\Administration;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use App\Models\Project;
 use App\Http\Requests\Administration\Projects\CreateProjectRequest;
 use App\Http\Requests\Administration\Projects\UpdateProjectRequest;
@@ -20,15 +21,18 @@ class ProjectsController extends Controller
     {
         $limit = request()->limit;
         $page = request()->page;
+        $search = request()->search ?? null;
 
-        $data = $this->projectModel->paginate($limit, ['*'], 'projects', $page);
+        $data = $this->projectModel->when($search, function ($query) use ($search) {
+            $query->where('name', 'like', "%{$search}%")->orWhere('description', 'like', "%{$search}%");
+        })->paginate($limit, ['*'], 'projects', $page);
 
         return response(new ProjectsResource($data), 200);
     }
 
     public function store(CreateProjectRequest $request)
     {
-        $project = $this->projectModel->create($request->validated());
+        $project = $this->projectModel->create([...$request->validated(), 'uuid' => Str::uuid()]);
 
         $image_path = "images/projects/" . $project->uuid . ".png";
 

@@ -5,7 +5,7 @@ interface IValidation {
 
 const regexEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-export function formValidation(value: string, type: string): IValidation {
+export function formValidation(value: string | string[], type: string): IValidation {
 
     let validation = { error: false, message: '' };
 

@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\v1\Administration;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
 use App\Models\Post;
 use App\Http\Requests\Administration\Posts\CreatePostRequest;
@@ -21,15 +21,18 @@ class PostsController extends Controller
     {
         $limit = request()->limit;
         $page = request()->page;
+        $search = request()->search ?? null;
 
-        $data = $this->postModel->paginate($limit, ['*'], 'posts', $page);
+        $data = $this->postModel->when($search, function ($query) use ($search) {
+            $query->where('name', 'like', "%{$search}%")->orWhere('description', 'like', "%{$search}%");
+        })->paginate($limit, ['*'], 'posts', $page);
 
         return response(new PostsResource($data), 200);
     }
 
     public function store(CreatePostRequest $request)
     {
-        $post = $this->postModel->create($request->validated());
+        $post = $this->postModel->create([...$request->validated(), 'uuid' => Str::uuid()]);
 
         $image_path = "images/posts/" . $post->uuid . ".png";
         Storage::disk('public')->put($image_path, $request->image);

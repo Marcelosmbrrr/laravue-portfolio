@@ -12,6 +12,7 @@ class ProjectsResource extends ResourceCollection
 
     public function toArray(Request $request): array
     {
+        $this->payload["projects"] = [];
         foreach ($this->collection as $index => $project) {
 
             $this->payload["projects"][$index] = [

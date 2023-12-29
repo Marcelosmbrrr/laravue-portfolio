@@ -19,25 +19,16 @@
                                                 clip-rule="evenodd" />
                                         </svg>
                                     </div>
-                                    <input type="text" id="simple-search"
+                                    <input v-model="search" @keydown="onSubmitSearch" type="text" id="simple-search"
                                         class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full pl-10 p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
                                         placeholder="Procurar tecnologia" />
                                 </div>
                             </form>
                         </div>
                         <div class="w-full flex justify-end gap-1">
-                            <button type="button"
-                                class="w-full md:w-auto flex items-center justify-center py-2 px-4 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-primary-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">
-                                Create
-                            </button>
-                            <button type="button"
-                                class="w-full md:w-auto flex items-center justify-center py-2 px-4 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-primary-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">
-                                Edit
-                            </button>
-                            <button type="button"
-                                class="w-full md:w-auto flex items-center justify-center py-2 px-4 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-primary-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">
-                                Delete
-                            </button>
+                            <CreateTech />
+                            <EditTech />
+                            <DeleteResource />
                             <button type="button" @click="reload = !reload"
                                 class="w-full md:w-auto flex items-center justify-center py-2 px-4 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-primary-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">
                                 <svg class="w-3 h-3 text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
@@ -68,8 +59,11 @@
                                     <td class="px-4 py-3">{{ tech.name }}</td>
                                     <td class="px-4 py-3">{{ tech.description }}</td>
                                 </tr>
-                                <tr v-if="!pending && techs.length === 0" class="border-b dark:border-gray-700">
-                                    <td colspan="4" class="px-4 py-3 text-center">Nenhuma tecnologia encontrado</td>
+                                <tr v-else-if="!pending && techs.length === 0" class="border-b dark:border-gray-700">
+                                    <td colspan="4" class="px-4 py-3 text-center">Nenhuma tecnologia encontrada</td>
+                                </tr>
+                                <tr v-else-if="pending" class="border-b dark:border-gray-700">
+                                    <td colspan="4" class="px-4 py-3 text-center">Carregando ...</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -80,7 +74,7 @@
                             Showing
                             <span class="font-semibold text-gray-900 dark:text-white">1-{{ limit }}</span>
                             of
-                            <span class="font-semibold text-gray-900 dark:text-white">{{ totalPages }}</span>
+                            <span class="font-semibold text-gray-900 dark:text-white">{{ totalRecords }}</span>
                         </span>
                         <ul class="inline-flex items-stretch -space-x-px">
                             <li @click="onPreviousPage"
@@ -114,6 +108,9 @@ import * as Vue from 'vue';
 import { api } from '@/utils/Api';
 import { Head } from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+import CreateTech from '@/Components/Forms/Technologies/CreateTech.vue';
+import EditTech from '@/Components/Forms/Technologies/EditTech.vue';
+import DeleteResource from '@/Components/Forms/Shared/DeleteResource.vue';
 
 interface ITech {
     id: number;
@@ -129,8 +126,10 @@ const selections = Vue.ref<ITech[]>([]);
 const pending = Vue.ref<boolean>(false);
 const limit = Vue.ref<number>(10);
 const page = Vue.ref<number>(1);
+const search = Vue.ref<string>('');
 const reload = Vue.ref<boolean>(false);
 const totalPages = Vue.ref<number>(0);
+const totalRecords = Vue.ref<number>(0);
 
 Vue.onMounted(() => {
     fetchTechs();
@@ -143,13 +142,21 @@ Vue.watch([limit, page, reload], () => {
 async function fetchTechs() {
     try {
         pending.value = true;
-        const response = await api.get(`api/techs?limit=${limit.value}&page=${page.value}`);
+        const response = await api.get(`api/techs?limit=${limit.value}&page=${page.value}&search=${search.value}`);
         techs.value = response.data.techs;
         totalPages.value = response.data.pagination.pages;
+        totalRecords.value = response.data.pagination.records;
     } catch (error) {
         console.log(error);
     } finally {
         pending.value = false;
+    }
+}
+
+function onSubmitSearch() {
+    if (e.key === 'Enter') {
+        page.value = 1;
+        fetchTechs();
     }
 }
 

@@ -11,6 +11,7 @@ class TechnologiesResource extends ResourceCollection
 
     public function toArray(Request $request): array
     {
+        $this->payload["techs"] = [];
         foreach ($this->collection as $index => $tech) {
 
             $this->payload["techs"][$index] = [

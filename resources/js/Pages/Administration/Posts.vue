@@ -19,25 +19,16 @@
                                                 clip-rule="evenodd" />
                                         </svg>
                                     </div>
-                                    <input type="text" id="simple-search"
+                                    <input v-model="search" @keydown="onSubmitSearch" type="text" id="simple-search"
                                         class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full pl-10 p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
                                         placeholder="Procurar post" />
                                 </div>
                             </form>
                         </div>
                         <div class="w-full flex justify-end gap-1">
-                            <button type="button"
-                                class="w-full md:w-auto flex items-center justify-center py-2 px-4 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-primary-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">
-                                Create
-                            </button>
-                            <button type="button"
-                                class="w-full md:w-auto flex items-center justify-center py-2 px-4 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-primary-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">
-                                Edit
-                            </button>
-                            <button type="button"
-                                class="w-full md:w-auto flex items-center justify-center py-2 px-4 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-primary-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">
-                                Delete
-                            </button>
+                            <CreatePost />
+                            <EditPost />
+                            <DeleteResource />
                             <button type="button" @click="reload = !reload"
                                 class="w-full md:w-auto flex items-center justify-center py-2 px-4 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-primary-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">
                                 <svg class="w-3 h-3 text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
@@ -52,21 +43,29 @@
                         <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
                             <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                                 <tr>
-                                    <th scope="col" class="px-4 py-3">ID</th>
-                                    <th scope="col" class="px-4 py-3">Fase</th>
+                                    <th scope="col" class="px-4 py-3">#</th>
                                     <th scope="col" class="px-4 py-3">Nome</th>
                                     <th scope="col" class="px-4 py-3">Descrição</th>
-                                    <th scope="col" class="px-4 py-3">Tecnologias</th>
+                                    <th scope="col" class="px-4 py-3">Imagem</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr class="border-b dark:border-gray-700">
-                                    <th scope="row"
-                                        class="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">1</th>
-                                    <td class="px-4 py-3">PC</td>
-                                    <td class="px-4 py-3">PC</td>
-                                    <td class="px-4 py-3">Apple</td>
-                                    <td class="px-4 py-3">300</td>
+                                <tr v-if="!pending && posts.length > 0" v-for="post in posts"
+                                    class="border-b dark:border-gray-700">
+                                    <td class="px-4 py-3">
+                                        <input :id="String(post.id)" @change="onSelect" type="checkbox"
+                                            :checked="selections.map((post) => post.id).includes(post.id)"
+                                            class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                                    </td>
+                                    <td class="px-4 py-3">{{ post.name }}</td>
+                                    <td class="px-4 py-3">{{ post.description }}</td>
+                                    <td class="px-4 py-3">{{ post.image_url }}</td>
+                                </tr>
+                                <tr v-else-if="!pending && posts.length === 0" class="border-b dark:border-gray-700">
+                                    <td colspan="4" class="px-4 py-3 text-center">Nenhum post encontrado</td>
+                                </tr>
+                                <tr v-else-if="pending" class="border-b dark:border-gray-700">
+                                    <td colspan="4" class="px-4 py-3 text-center">Carregando ...</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -75,9 +74,9 @@
                         class="flex flex-col md:flex-row justify-between items-start md:items-center space-y-3 md:space-y-0 p-4">
                         <span class="text-sm font-normal text-gray-500 dark:text-gray-400">
                             Showing
-                            <span class="font-semibold text-gray-900 dark:text-white">1-10</span>
+                            <span class="font-semibold text-gray-900 dark:text-white">1-{{ limit }}</span>
                             of
-                            <span class="font-semibold text-gray-900 dark:text-white">1000</span>
+                            <span class="font-semibold text-gray-900 dark:text-white">{{ totalRecords }}</span>
                         </span>
                         <ul class="inline-flex items-stretch -space-x-px">
                             <li @click="onPreviousPage"
@@ -111,42 +110,60 @@ import * as Vue from 'vue';
 import { api } from '@/utils/Api';
 import { Head } from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+import CreatePost from '@/Components/Forms/Posts/CreatePost.vue';
+import EditPost from '@/Components/Forms/Posts/EditPost.vue';
+import DeleteResource from '@/Components/Forms/Shared/DeleteResource.vue';
 
-interface IProject {
+interface IPost {
     id: number;
     name: string;
     description: string;
+    image_url: string;
+    content: string[];
     created_at: string;
     updated_at: string;
 }
 
-const projects = Vue.ref<IProject[]>([]);
+const posts = Vue.ref<IPost[]>([]);
+const selections = Vue.ref<IPost[]>([]);
 const pending = Vue.ref<boolean>(false);
 const limit = Vue.ref<number>(10);
 const page = Vue.ref<number>(1);
+const search = Vue.ref<string>('');
 const reload = Vue.ref<boolean>(false);
-const filter = Vue.ref<"user" | "admin">("user");
 const totalPages = Vue.ref<number>(0);
+const totalRecords = Vue.ref<number>(0);
 
 Vue.onMounted(() => {
-    fetchUsers();
+    fetchPosts();
 });
 
 Vue.watch([limit, page, reload], () => {
-    fetchUsers();
+    fetchPosts();
 });
 
-async function fetchUsers() {
+async function fetchPosts() {
     try {
         pending.value = true;
-        const response = await api.get(`api/admin/users?limit=${limit.value}&page=${page.value}&filter=${filter.value}`);
-        projects.value = response.data.users;
-        totalPages.value = response.data.last_page;
+        const response = await api.get(`api/posts?limit=${limit.value}&page=${page.value}&search=${search.value}`);
+        posts.value = response.data.posts;
+        totalPages.value = response.data.pagination.pages;
+        totalRecords.value = response.data.pagination.records;
     } catch (error) {
         console.log(error);
     } finally {
         pending.value = false;
     }
+}
+
+function onSubmitSearch() {
+    if (e.key === 'Enter') {
+        page.value = 1;
+    }
+}
+
+function onSelect(e: Event) {
+    console.log(e.currentTarget.id);
 }
 
 function onNextPage() {

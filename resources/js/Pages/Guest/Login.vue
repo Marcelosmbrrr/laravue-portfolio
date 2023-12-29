@@ -59,7 +59,6 @@ import { useToast } from "vue-toastification";
 import { useAuth } from '@/store/store';
 import TagIcon from '@/Components/Icons/TagIcon.vue';
 import { formValidation } from '@/utils/formValidation';
-import { api } from '@/utils/Api';
 
 interface IForm {
     username: { value: string, type: string };
