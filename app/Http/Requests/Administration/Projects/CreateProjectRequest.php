@@ -14,7 +14,10 @@ class CreateProjectRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            "name" => "required|string",
+            "description" => "required|string",
+            "technology" => "required|array",
+            "image" => "required"
         ];
     }
 }

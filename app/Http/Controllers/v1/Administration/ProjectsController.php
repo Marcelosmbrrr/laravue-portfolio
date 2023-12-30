@@ -32,6 +32,7 @@ class ProjectsController extends Controller
 
     public function store(CreateProjectRequest $request)
     {
+        dd("asd");
         $project = $this->projectModel->create([...$request->validated(), 'uuid' => Str::uuid()]);
 
         $image_path = "images/projects/" . $project->uuid . ".png";

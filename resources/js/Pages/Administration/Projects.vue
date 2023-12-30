@@ -26,9 +26,9 @@
                             </form>
                         </div>
                         <div class="w-full flex justify-end gap-1">
-                            <CreateProject />
-                            <EditProject />
-                            <DeleteResource />
+                            <CreateProject :openable="selections.length === 0" />
+                            <EditProject :openable="selections.length === 1" :project="selections[0]" />
+                            <DeleteResource :openable="selections.length > 0" :ids="selections.map((item) => item.id)" />
                             <button type="button" @click="reload = !reload"
                                 class="w-full md:w-auto flex items-center justify-center py-2 px-4 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-primary-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">
                                 <svg class="w-3 h-3 text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
@@ -114,10 +114,11 @@ import CreateProject from '@/Components/Forms/Projects/CreateProject.vue';
 import EditProject from '@/Components/Forms/Projects/EditProject.vue';
 import DeleteResource from '@/Components/Forms/Shared/DeleteResource.vue';
 
-interface IProject {
+export interface IProject {
     id: number;
     phase: string;
     name: string;
+    technology: string;
     description: string;
     created_at: string;
     updated_at: string;
@@ -155,15 +156,28 @@ async function fetchProjects() {
     }
 }
 
-function onSubmitSearch(e: Event) {
+function onSubmitSearch(e: any) {
     if (e.key === 'Enter') {
         page.value = 1;
         fetchProjects();
     }
 }
 
-function onSelect(e: Event) {
-    console.log(e.currentTarget.id);
+function onSelect(e: any) {
+
+    const project = projects.value.find((project: IProject) => Number(project.id) === Number(e.target.id));
+    const is_selected = selections.value.find((project: IProject) => Number(project.id) === Number(e.target.id));
+    let selectionsClone = JSON.parse(JSON.stringify(selections.value));
+
+    if (is_selected) {
+        const index = selectionsClone.findIndex((project: IProject) => Number(project.id) === Number(e.target.id));
+        selectionsClone.splice(index, 1);
+        selections.value = selectionsClone;
+    } else {
+        selectionsClone.push(project);
+        selections.value = selectionsClone;
+    }
+
 }
 
 function onNextPage() {

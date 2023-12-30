@@ -19,7 +19,7 @@
                             Linkedin
                         </a>
                         <li
-                            class="block py-2 pr-4 pl-3 text-white rounded lg:p-0 dark:text-white hover:text-emerald-500 cursor-pointer">
+                            class="block py-2 pr-4 pl-3 text-white rounded lg:p-0 dark:text-white hover:text-emerald-500 cursor-not-allowed">
                             Contato
                         </li>
                     </ul>

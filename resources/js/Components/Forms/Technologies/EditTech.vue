@@ -1,6 +1,6 @@
 <template>
     <!-- Modal toggle -->
-    <button @click="open = true" type="button"
+    <button @click="onOpen" type="button"
         class="w-full md:w-auto flex items-center justify-center py-2 px-4 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-emerald-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">
         Edit
     </button>
@@ -11,7 +11,7 @@
 
         <div className="fixed inset-0 bg-gray-900 bg-opacity-75 transition-opacity"></div>
 
-        <div class="relative p-4 w-full max-w-2xl h-full md:h-auto">
+        <div class="relative p-4 w-full mx-auto mt-10 max-w-2xl h-full md:h-auto">
             <!-- Modal content -->
             <div class="relative p-4 bg-white rounded-lg shadow dark:bg-gray-800 sm:p-5">
                 <!-- Modal header -->
@@ -31,63 +31,36 @@
                     </button>
                 </div>
                 <!-- Modal body -->
-                <form action="#">
+                <form @submit.prevent="submit">
                     <div class="grid gap-4 mb-4 sm:grid-cols-2">
                         <div>
                             <label for="name"
                                 class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Name</label>
-                            <input type="text" name="name" id="name" value="iPad Air Gen 5th Wi-Fi"
+                            <input v-model="form.name.value" type="text" id="name"
                                 class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-emerald-600 focus:border-emerald-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-emerald-500 dark:focus:border-emerald-500"
-                                placeholder="Ex. Apple iMac 27&ldquo;">
+                                placeholder="Type name">
+                            <span class="text-sm text-red-500">{{ formErrors.name.message }}</span>
                         </div>
-                        <div>
-                            <label for="brand"
-                                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Brand</label>
-                            <input type="text" name="brand" id="brand" value="Google"
-                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-emerald-600 focus:border-emerald-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-emerald-500 dark:focus:border-emerald-500"
-                                placeholder="Ex. Apple">
-                        </div>
-                        <div>
-                            <label for="price"
-                                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Price</label>
-                            <input type="number" value="399" name="price" id="price"
-                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-emerald-600 focus:border-emerald-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-emerald-500 dark:focus:border-emerald-500"
-                                placeholder="$299">
-                        </div>
-                        <div>
-                            <label for="category"
-                                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Category</label>
-                            <select id="category"
-                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-emerald-500 focus:border-emerald-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-emerald-500 dark:focus:border-emerald-500">
-                                <option selected="">Electronics</option>
-                                <option value="TV">TV/Monitors</option>
-                                <option value="PC">PC</option>
-                                <option value="GA">Gaming/Console</option>
-                                <option value="PH">Phones</option>
-                            </select>
+                        <div class="flex items-end">
+                            <TechSelection />
                         </div>
                         <div class="sm:col-span-2">
                             <label for="description"
                                 class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Description</label>
-                            <textarea id="description" rows="5"
+                            <textarea v-model="form.description.value" id="description" rows="5"
                                 class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-emerald-500 focus:border-emerald-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-emerald-500 dark:focus:border-emerald-500"
-                                placeholder="Write a description...">Standard glass, 3.8GHz 8-core 10th-generation Intel Core i7 processor, Turbo Boost up to 5.0GHz, 16GB 2666MHz DDR4 memory, Radeon Pro 5500 XT with 8GB of GDDR6 memory, 256GB SSD storage, Gigabit Ethernet, Magic Mouse 2, Magic Keyboard - US</textarea>
+                                placeholder="Write a description..."></textarea>
+                            <span class="text-sm text-red-500">{{ formErrors.description.message }}</span>
                         </div>
                     </div>
                     <div class="flex items-center space-x-4">
                         <button type="submit"
                             class="text-white bg-emerald-700 hover:bg-emerald-800 focus:ring-4 focus:outline-none focus:ring-emerald-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-emerald-600 dark:hover:bg-emerald-700 dark:focus:ring-emerald-800">
-                            Update product
+                            {{ pending ? 'Loading ...' : 'Confirm' }}
                         </button>
-                        <button type="button"
-                            class="text-red-600 inline-flex items-center hover:text-white border border-red-600 hover:bg-red-600 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:border-red-500 dark:text-red-500 dark:hover:text-white dark:hover:bg-red-600 dark:focus:ring-red-900">
-                            <svg class="mr-1 -ml-1 w-5 h-5" fill="currentColor" viewBox="0 0 20 20"
-                                xmlns="http://www.w3.org/2000/svg">
-                                <path fill-rule="evenodd"
-                                    d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
-                                    clip-rule="evenodd"></path>
-                            </svg>
-                            Delete
+                        <button @click="open = false" type="button"
+                            class="text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm px-5 py-2.5 me-2 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700">
+                            Cancelar
                         </button>
                     </div>
                 </form>
@@ -98,6 +71,78 @@
 
 <script setup lang="ts">
 import * as Vue from 'vue';
+import { defineProps } from 'vue';
+import { useToast } from "vue-toastification";
+import { formValidation } from '@/utils/formValidation';
+import { api } from '@/utils/Api';
+import TechSelection from '../Shared/TechSelection.vue';
+
+const props = defineProps({
+    openable: Boolean
+});
+
+interface IForm {
+    name: { value: string, validation: string };
+    description: { value: string, validation: string };
+    icon: { value: string, validation: string };
+}
+
+interface IFormErrors {
+    name: { error: boolean; message: string };
+    description: { error: boolean; message: string };
+    icon: { error: boolean; message: string };
+}
+
+const form = Vue.reactive<IForm>({
+    name: { value: '', validation: 'required|min:3' },
+    description: { value: '', validation: 'required|min:10' },
+    icon: { value: '', validation: "required|min:1" }
+});
+
+const formErrors = Vue.reactive<IFormErrors>({
+    name: { error: false, message: '' },
+    description: { error: false, message: '' },
+    icon: { error: false, message: '' }
+});
 
 const open = Vue.ref<boolean>(false);
+const pending = Vue.ref<boolean>(false);
+const toast = useToast();
+
+async function submit() {
+
+    let nameValidation = formValidation(form.name.value, form.name.validation);
+    let descriptionValidation = formValidation(form.description.value, form.description.validation);
+    let iconValidation = formValidation(form.icon.value, form.icon.validation);
+
+    formErrors.name = nameValidation;
+    formErrors.description = descriptionValidation;
+    formErrors.icon = iconValidation;
+
+    if (nameValidation.error || descriptionValidation.error || iconValidation.error) {
+        return;
+    }
+
+    pending.value = true;
+
+    try {
+        await api.post('api/projects', {
+            name: form.name.value,
+            description: form.description.value,
+            icon: form.icon.value
+        });
+        toast.success('Tech created successfully!');
+        open.value = false;
+    } catch (error) {
+        toast.error('An error occurred while creating the tech.');
+    } finally {
+        pending.value = false;
+    }
+}
+
+function onOpen() {
+    if (props.openable) {
+        open.value = true;
+    }
+}
 </script>

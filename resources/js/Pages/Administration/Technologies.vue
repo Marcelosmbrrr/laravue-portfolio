@@ -26,9 +26,9 @@
                             </form>
                         </div>
                         <div class="w-full flex justify-end gap-1">
-                            <CreateTech />
-                            <EditTech />
-                            <DeleteResource />
+                            <CreateTech :openable="selections.length === 0" />
+                            <EditTech :openable="selections.length === 1" />
+                            <DeleteResource :openable="selections.length > 0" />
                             <button type="button" @click="reload = !reload"
                                 class="w-full md:w-auto flex items-center justify-center py-2 px-4 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-primary-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">
                                 <svg class="w-3 h-3 text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
@@ -153,15 +153,28 @@ async function fetchTechs() {
     }
 }
 
-function onSubmitSearch() {
+function onSubmitSearch(e: any) {
     if (e.key === 'Enter') {
         page.value = 1;
         fetchTechs();
     }
 }
 
-function onSelect(e: Event) {
-    console.log(e.currentTarget.id);
+function onSelect(e: any) {
+
+    const project = techs.value.find((project: ITech) => Number(project.id) === Number(e.target.id));
+    const is_selected = selections.value.find((project: ITech) => Number(project.id) === Number(e.target.id));
+    let selectionsClone = JSON.parse(JSON.stringify(selections.value));
+
+    if (is_selected) {
+        const index = selectionsClone.findIndex((project: ITech) => Number(project.id) === Number(e.target.id));
+        selectionsClone.splice(index, 1);
+        selections.value = selectionsClone;
+    } else {
+        selectionsClone.push(project);
+        selections.value = selectionsClone;
+    }
+
 }
 
 function onNextPage() {

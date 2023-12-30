@@ -10,26 +10,26 @@
                         <span
                             class="self-center text-emerald-500 text-2xl font-semibold whitespace-nowrap">smbr-admin</span>
                     </div>
-                    <div class="flex justify-between items-center w-auto order-1" id="mobile-menu-2">
+                    <div class="flex justify-between items-center w-auto order-1">
                         <ul class="flex mt-4 font-medium space-x-8 lg:mt-0">
                             <li>
                                 <Link href="/projects"
                                     :class="{ 'text-emerald-500': $page.url === '/projects', 'text-white': $page.url !== '/projects' }"
-                                    class="block py-2 pr-4 pl-3 rounded hover:text-emerald-500 bg-emerald-500 lg:bg-transparent lg:p-0">
+                                    class="block py-2 pr-4 pl-3 rounded hover:text-emerald-500 bg-emerald-500 bg-transparent lg:p-0">
                                 Projetos
                                 </Link>
                             </li>
                             <li>
                                 <Link href="/technologies"
                                     :class="{ 'text-emerald-500': $page.url === '/technologies', 'text-white': $page.url !== '/technologies' }"
-                                    class="block py-2 pr-4 pl-3 rounded hover:text-emerald-500 bg-emerald-500 lg:bg-transparent lg:p-0">
+                                    class="block py-2 pr-4 pl-3 rounded hover:text-emerald-500 bg-emerald-500 bg-transparent lg:p-0">
                                 Tecnologias
                                 </Link>
                             </li>
                             <li>
                                 <Link href="/posts"
                                     :class="{ 'text-emerald-500': $page.url === '/posts', 'text-white': $page.url !== '/posts' }"
-                                    class="block py-2 pr-4 pl-3 rounded hover:text-emerald-500 bg-emerald-500 lg:bg-transparent lg:p-0">
+                                    class="block py-2 pr-4 pl-3 rounded hover:text-emerald-500 bg-emerald-500 bg-transparent lg:p-0">
                                 Postagens
                                 </Link>
                             </li>

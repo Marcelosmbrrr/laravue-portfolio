@@ -61,8 +61,8 @@ import TagIcon from '@/Components/Icons/TagIcon.vue';
 import { formValidation } from '@/utils/formValidation';
 
 interface IForm {
-    username: { value: string, type: string };
-    password: { value: string, type: string };
+    username: { value: string, validation: string };
+    password: { value: string, validation: string };
     remember: boolean;
 }
 
@@ -72,8 +72,8 @@ interface IFormErrors {
 }
 
 const form = Vue.reactive<IForm>({
-    username: { value: '', type: 'required' },
-    password: { value: '', type: 'required' },
+    username: { value: '', validation: 'required' },
+    password: { value: '', validation: 'required' },
     remember: false,
 });
 
@@ -88,8 +88,8 @@ const toast = useToast();
 
 async function submit() {
 
-    let emailValidation = formValidation(form.username.value, form.username.type);
-    let passwordValidation = formValidation(form.password.value, form.password.type);
+    let emailValidation = formValidation(form.username.value, form.username.validation);
+    let passwordValidation = formValidation(form.password.value, form.password.validation);
 
     formErrors.username = emailValidation;
     formErrors.password = passwordValidation;

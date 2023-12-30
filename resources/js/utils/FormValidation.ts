@@ -9,6 +9,7 @@ export function formValidation(value: string | string[], type: string): IValidat
 
     let validation = { error: false, message: '' };
 
+    // required
     if (type.includes('required')) {
         if (!value) {
             return {
@@ -18,6 +19,7 @@ export function formValidation(value: string | string[], type: string): IValidat
         }
     }
 
+    // email
     if (type.includes('email')) {
         if (!regexEmail.test(value.toString())) {
             return {
@@ -27,6 +29,7 @@ export function formValidation(value: string | string[], type: string): IValidat
         }
     }
 
+    // number
     if (type.includes('number')) {
         if (isNaN(Number(value))) {
             return {
@@ -36,6 +39,7 @@ export function formValidation(value: string | string[], type: string): IValidat
         }
     }
 
+    // min:number
     if (type.includes('min')) {
         const min: string = type.split("|").filter((t) => /^min:(?!0+$)\d+$/.test(t))[0].split(":")[1];
         if (value.length < Number(min)) {
@@ -46,6 +50,7 @@ export function formValidation(value: string | string[], type: string): IValidat
         }
     }
 
+    // max:number
     if (type.includes('max')) {
         const max: string = type.split("|").filter((t) => /^max:(?!0+$)\d+$/.test(t))[0].split(":")[1];
         if (value.length > Number(max)) {
@@ -56,6 +61,7 @@ export function formValidation(value: string | string[], type: string): IValidat
         }
     }
 
+    // confirmed
     if (type.includes('confirmed')) {
         const value1 = type.split("|")[0];
         const value2 = type.split("|")[1];
@@ -63,6 +69,18 @@ export function formValidation(value: string | string[], type: string): IValidat
             return {
                 error: true,
                 message: "Os campos são incompatíveis."
+            }
+        }
+    }
+
+    // match:regex
+    if (type.includes('match')) {
+        const arr = type.split("match:");
+        const regex = new RegExp(arr[arr.length - 1]);
+        if (!regex.test(value.toString())) {
+            return {
+                error: true,
+                message: "Valor inválido."
             }
         }
     }

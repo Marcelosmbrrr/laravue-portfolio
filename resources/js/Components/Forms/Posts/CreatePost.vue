@@ -1,6 +1,6 @@
 <template>
     <!-- Modal toggle -->
-    <button @click="open = true" type="button"
+    <button @click="onOpen" type="button"
         class="w-full md:w-auto flex items-center justify-center py-2 px-4 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-emerald-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">
         Create
     </button>
@@ -59,7 +59,7 @@
                                 class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Category</label>
                             <select id="category"
                                 class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-emerald-500 focus:border-emerald-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-emerald-500 dark:focus:border-emerald-500">
-                                <option selected="">Electronics</option>
+                                <option selected>Electronics</option>
                                 <option value="TV">TV/Monitors</option>
                                 <option value="PC">PC</option>
                                 <option value="GA">Gaming/Console</option>
@@ -98,6 +98,17 @@
 
 <script setup lang="ts">
 import * as Vue from 'vue';
+import { defineProps } from 'vue';
+
+const props = defineProps({
+    openable: Boolean,
+});
+
+function onOpen() {
+    if (props.openable) {
+        open.value = true;
+    }
+}
 
 const open = Vue.ref<boolean>(false);
 </script>
