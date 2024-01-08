@@ -8,7 +8,8 @@ use App\Models\Project;
 class ProjectSeeder extends Seeder
 {
     public function run(): void
-    {
+    {  
+
         Project::insert([
             [
                 "uuid" => "4152f005-0bab-456d-a8ed-66077d0382a7",
@@ -37,7 +38,15 @@ class ProjectSeeder extends Seeder
                 "name" => "OctoBills",
                 "description" => "App Android para o controle das finanças pessoais, feito com React Native e hospedado na AWS.",
                 "technology" => json_encode(["Laravel 10", "React Native + TypeScript", "Tailwind CSS", "AWS"])
+            ],
+            [
+                "uuid" => "83a5551-c0d3-430b-bc38-924azy4e8fg7",
+                "phase" => "ideia",
+                "name" => "AtençãoPelotas",
+                "description" => "App Android para os eleitores de Pelotas acompanharem seus candidatos, feito com React Native e hospedado na AWS.",
+                "technology" => json_encode(["Laravel 10", "React Native + TypeScript", "Tailwind CSS", "AWS"])
             ]
         ]);
+        
     }
 }

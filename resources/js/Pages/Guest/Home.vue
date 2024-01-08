@@ -28,7 +28,6 @@ export interface IProject {
     phase: string;
     description: string;
     technology: string[];
-    status: string;
     image: string;
 }
 

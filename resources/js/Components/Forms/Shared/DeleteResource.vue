@@ -50,14 +50,11 @@ import * as Vue from 'vue';
 import { defineProps } from 'vue';
 
 const props = defineProps({
-    openable: Boolean,
     ids: Array
 });
 
 function onOpen() {
-    if (props.openable) {
-        open.value = true;
-    }
+    open.value = true;
 }
 
 const open = Vue.ref<boolean>(false);

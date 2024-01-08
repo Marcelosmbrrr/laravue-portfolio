@@ -96,11 +96,18 @@ import { useToast } from "vue-toastification";
 import { formValidation } from '@/utils/formValidation';
 import ImageUpload from '../Shared/ImageUpload.vue';
 import { api } from '@/utils/Api';
-import { IProject } from '@/Pages/Guest/Home.vue';
+
+interface ISelectedProject {
+    id: number;
+    phase: string;
+    name: string;
+    technology: string;
+    description: string;
+    image: string;
+}
 
 const props = defineProps({
-    openable: Boolean,
-    project: Object as PropType<IProject>
+    project: Object as PropType<ISelectedProject>
 });
 
 interface IForm {
@@ -119,10 +126,10 @@ interface IFormErrors {
 }
 
 const form = Vue.reactive<IForm>({
-    name: { value: props.project.name, validation: 'required|min:3' },
-    description: { value: props.project.description, validation: 'required|min:10' },
-    phase: { value: props.project.phase, validation: "required|match:^(ideia|planejamento|desenvolvimento|produção|finalizado)$" },
-    technology: { value: props.project.technology, validation: 'required|min:1' },
+    name: { value: props.project?.name, validation: 'required|min:3' },
+    description: { value: props.project?.description, validation: 'required|min:10' },
+    phase: { value: props.project?.phase, validation: "required|match:^(ideia|planejamento|desenvolvimento|produção|finalizado)$" },
+    technology: { value: props.project?.technology, validation: 'required|min:1' },
     image: ""
 });
 
@@ -133,6 +140,7 @@ const formErrors = Vue.reactive<IFormErrors>({
     technology: { error: false, message: '' }
 });
 
+const open = Vue.ref<boolean>(false);
 const pending = Vue.ref<boolean>(false);
 const toast = useToast();
 
@@ -172,14 +180,10 @@ async function submit() {
 }
 
 function onOpen() {
-    if (props.openable) {
-        open.value = true;
-    }
+    open.value = true;
 }
 
 function onUploadImage(uploaded_file: any) {
     form.image = uploaded_file;
 }
-
-const open = Vue.ref<boolean>(false);
 </script>

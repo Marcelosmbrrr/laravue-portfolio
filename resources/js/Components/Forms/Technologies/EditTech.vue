@@ -32,7 +32,7 @@
                 </div>
                 <!-- Modal body -->
                 <form @submit.prevent="submit">
-                    <div class="grid gap-4 mb-4 sm:grid-cols-2">
+                    <div class="flex flex-col mb-4">
                         <div>
                             <label for="name"
                                 class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Name</label>
@@ -41,10 +41,183 @@
                                 placeholder="Type name">
                             <span class="text-sm text-red-500">{{ formErrors.name.message }}</span>
                         </div>
-                        <div class="flex items-end">
-                            <TechSelection />
+                        <div>
+
+                            <label for="technologies"
+                                class="block my-4 text-sm font-medium text-gray-900 dark:text-white">Tecnologias</label>
+
+                            <div class="w-full h-32 flex flex-wrap gap-1 pb-3 overflow-y-scroll">
+                                <div @click="iconSelection" id="html5/html5-original"
+                                    class="flex justify-center items-center h-12 w-12 cursor-pointer border border-gray-500 hover:bg-emerald-400 rounded-lg"
+                                    :class="{ 'bg-emerald-400': form.icon.value.includes('html5/html5-original') }">
+                                    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/html5/html5-original.svg"
+                                        class="w-8 h-8" />
+                                </div>
+                                <div @click="iconSelection" id="css3/css3-original"
+                                    class="flex justify-center items-center h-12 w-12 cursor-pointer border border-gray-500 hover:bg-emerald-400 rounded-lg"
+                                    :class="{ 'bg-emerald-400': form.icon.value.includes('css3/css3-original') }">
+                                    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/css3/css3-original.svg"
+                                        class="w-8 h-8" />
+                                </div>
+                                <div @click="iconSelection" id="javascript/javascript-original"
+                                    class="flex justify-center items-center h-12 w-12 cursor-pointer border border-gray-500 hover:bg-emerald-400 rounded-lg"
+                                    :class="{ 'bg-emerald-400': form.icon.value.includes('javascript/javascript-original') }">
+                                    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg"
+                                        class="w-8 h-8" />
+                                </div>
+                                <div @click="iconSelection" id="typescript/typescript-original"
+                                    class="flex justify-center items-center h-12 w-12 cursor-pointer border border-gray-500 hover:bg-emerald-400 rounded-lg"
+                                    :class="{ 'bg-emerald-400': form.icon.value.includes('typescript/typescript-original') }">
+                                    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/typescript/typescript-original.svg"
+                                        class="w-8 h-8" />
+                                </div>
+                                <div @click="iconSelection" id="php/php-original"
+                                    class="flex justify-center items-center h-12 w-12 cursor-pointer border border-gray-500 hover:bg-emerald-400 rounded-lg"
+                                    :class="{ 'bg-emerald-400': form.icon.value.includes('php/php-original') }">
+                                    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/php/php-original.svg"
+                                        class="w-8 h-8" />
+                                </div>
+                                <div @click="iconSelection" id="tailwindcss/tailwindcss-plain"
+                                    class="flex justify-center items-center h-12 w-12 cursor-pointer border border-gray-500 hover:bg-emerald-400 rounded-lg"
+                                    :class="{ 'bg-emerald-400': form.icon.value.includes('tailwindcss/tailwindcss-plain') }">
+                                    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/tailwindcss/tailwindcss-plain.svg"
+                                        class="w-8 h-8" />
+                                </div>
+                                <div @click="iconSelection" id="react/react-original"
+                                    class="flex justify-center items-center h-12 w-12 cursor-pointer border border-gray-500 hover:bg-emerald-400 rounded-lg"
+                                    :class="{ 'bg-emerald-400': form.icon.value.includes('react/react-original') }">
+                                    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg"
+                                        class="w-8 h-8" />
+                                </div>
+                                <div @click="iconSelection" id="vuejs/vuejs-original"
+                                    class="flex justify-center items-center h-12 w-12 cursor-pointer border border-gray-500 hover:bg-emerald-400 rounded-lg"
+                                    :class="{ 'bg-emerald-400': form.icon.value.includes('vuejs/vuejs-original') }">
+                                    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/vuejs/vuejs-original.svg"
+                                        class="w-8 h-8" />
+                                </div>
+                                <div @click="iconSelection" id="angularjs/angularjs-original"
+                                    class="flex justify-center items-center h-12 w-12 cursor-pointer border border-gray-500 hover:bg-emerald-400 rounded-lg"
+                                    :class="{ 'bg-emerald-400': form.icon.value.includes('angularjs/angularjs-original') }">
+                                    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/angularjs/angularjs-original.svg"
+                                        class="w-8 h-8" />
+                                </div>
+                                <div @click="iconSelection" id="nuxtjs/nuxtjs-original"
+                                    class="flex justify-center items-center h-12 w-12 cursor-pointer border border-gray-500 hover:bg-emerald-400 rounded-lg"
+                                    :class="{ 'bg-emerald-400': form.icon.value.includes('nuxtjs/nuxtjs-original') }">
+                                    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nuxtjs/nuxtjs-original.svg"
+                                        class="w-8 h-8" />
+                                </div>
+                                <div @click="iconSelection" id="android/android-plain"
+                                    class="flex justify-center items-center h-12 w-12 cursor-pointer border border-gray-500 hover:bg-emerald-400 rounded-lg"
+                                    :class="{ 'bg-emerald-400': form.icon.value.includes('android/android-plain') }">
+                                    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/android/android-plain.svg"
+                                        class="w-8 h-8" />
+                                </div>
+                                <div @click="iconSelection" id="docker/docker-original"
+                                    class="flex justify-center items-center h-12 w-12 cursor-pointer border border-gray-500 hover:bg-emerald-400 rounded-lg"
+                                    :class="{ 'bg-emerald-400': form.icon.value.includes('docker/docker-original') }">
+                                    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/docker/docker-original.svg"
+                                        class="w-8 h-8" />
+                                </div>
+                                <div @click="iconSelection" id="amazonwebservices/amazonwebservices-original"
+                                    class="flex justify-center items-center h-12 w-12 cursor-pointer border border-gray-500 hover:bg-emerald-400 rounded-lg"
+                                    :class="{ 'bg-emerald-400': form.icon.value.includes('amazonwebservices/amazonwebservices-original') }">
+                                    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/amazonwebservices/amazonwebservices-original.svg"
+                                        class="w-8 h-8" />
+                                </div>
+                                <div @click="iconSelection" id="digitalocean/digitalocean-original"
+                                    class="flex justify-center items-center h-12 w-12 cursor-pointer border border-gray-500 hover:bg-emerald-400 rounded-lg"
+                                    :class="{ 'bg-emerald-400': form.icon.value.includes('digitalocean/digitalocean-original') }">
+                                    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/digitalocean/digitalocean-original.svg"
+                                        class="w-8 h-8" />
+                                </div>
+                                <div @click="iconSelection" id="laravel/laravel-plain"
+                                    class="flex justify-center items-center h-12 w-12 cursor-pointer border border-gray-500 hover:bg-emerald-400 rounded-lg"
+                                    :class="{ 'bg-emerald-400': form.icon.value.includes('laravel/laravel-plain') }">
+                                    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/laravel/laravel-plain.svg"
+                                        class="w-8 h-8" />
+                                </div>
+                                <div @click="iconSelection" id="nodejs/nodejs-original"
+                                    class="flex justify-center items-center h-12 w-12 cursor-pointer border border-gray-500 hover:bg-emerald-400 rounded-lg"
+                                    :class="{ 'bg-emerald-400': form.icon.value.includes('nodejs/nodejs-original') }">
+                                    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nodejs/nodejs-original.svg"
+                                        class="w-8 h-8" />
+                                </div>
+                                <div @click="iconSelection" id="express/express-original"
+                                    class="flex justify-center items-center h-12 w-12 cursor-pointer border border-gray-500 hover:bg-emerald-400 rounded-lg"
+                                    :class="{ 'bg-emerald-400': form.icon.value.includes('express/express-original') }">
+                                    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/express/express-original.svg"
+                                        class="w-8 h-8" />
+                                </div>
+                                <div @click="iconSelection" id="adonisjs/adonisjs-original"
+                                    class="flex justify-center items-center h-12 w-12 cursor-pointer border border-gray-500 hover:bg-emerald-400 rounded-lg"
+                                    :class="{ 'bg-emerald-400': form.icon.value.includes('adonisjs/adonisjs-original') }">
+                                    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/adonisjs/adonisjs-original.svg"
+                                        class="w-8 h-8" />
+                                </div>
+                                <div @click="iconSelection" id="nestjs/nestjs-plain"
+                                    class="flex justify-center items-center h-12 w-12 cursor-pointer border border-gray-500 hover:bg-emerald-400 rounded-lg"
+                                    :class="{ 'bg-emerald-400': form.icon.value.includes('nestjs/nestjs-plain') }">
+                                    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nestjs/nestjs-plain.svg"
+                                        class="w-8 h-8" />
+                                </div>
+                                <div @click="iconSelection" id="bootstrap/bootstrap-original"
+                                    class="flex justify-center items-center h-12 w-12 cursor-pointer border border-gray-500 hover:bg-emerald-400 rounded-lg"
+                                    :class="{ 'bg-emerald-400': form.icon.value.includes('bootstrap/bootstrap-original') }">
+                                    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/bootstrap/bootstrap-original.svg"
+                                        class="w-8 h-8" />
+                                </div>
+                                <div @click="iconSelection" id="java/java-original-wordmark"
+                                    class="flex justify-center items-center h-12 w-12 cursor-pointer border border-gray-500 hover:bg-emerald-400 rounded-lg"
+                                    :class="{ 'bg-emerald-400': form.icon.value.includes('java/java-original-wordmark') }">
+                                    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/java/java-original-wordmark.svg"
+                                        class="w-8 h-8" />
+                                </div>
+                                <div @click="iconSelection" id="jenkins/jenkins-original"
+                                    class="flex justify-center items-center h-12 w-12 cursor-pointer border border-gray-500 hover:bg-emerald-400 rounded-lg"
+                                    :class="{ 'bg-emerald-400': form.icon.value.includes('jenkins/jenkins-original') }">
+                                    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/jenkins/jenkins-original.svg"
+                                        class="w-8 h-8" />
+                                </div>
+                                <div @click="iconSelection" id="jquery/jquery-plain-wordmark"
+                                    class="flex justify-center items-center h-12 w-12 cursor-pointer border border-gray-500 hover:bg-emerald-400 rounded-lg"
+                                    :class="{ 'bg-emerald-400': form.icon.value.includes('jquery/jquery-plain-wordmark') }">
+                                    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/jquery/jquery-plain-wordmark.svg"
+                                        class="w-8 h-8" />
+                                </div>
+                                <div @click="iconSelection" id="kubernetes/kubernetes-plain"
+                                    class="flex justify-center items-center h-12 w-12 cursor-pointer border border-gray-500 hover:bg-emerald-400 rounded-lg"
+                                    :class="{ 'bg-emerald-400': form.icon.value.includes('kubernetes/kubernetes-plain') }">
+                                    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/kubernetes/kubernetes-plain.svg"
+                                        class="w-8 h-8" />
+                                </div>
+                                <div @click="iconSelection" id="nextjs/nextjs-original"
+                                    class="flex justify-center items-center h-12 w-12 cursor-pointer border border-gray-500 hover:bg-emerald-400 rounded-lg"
+                                    :class="{ 'bg-emerald-400': form.icon.value.includes('nextjs/nextjs-original') }">
+                                    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nextjs/nextjs-original.svg"
+                                        class="w-8 h-8" />
+                                </div>
+                                <div @click="iconSelection" id="mysql/mysql-original-wordmark"
+                                    class="flex justify-center items-center h-12 w-12 cursor-pointer border border-gray-500 hover:bg-emerald-400 rounded-lg"
+                                    :class="{ 'bg-emerald-400': form.icon.value.includes('mysql/mysql-original-wordmark') }">
+                                    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mysql/mysql-original-wordmark.svg"
+                                        class="w-8 h-8" />
+                                </div>
+                                <div @click="iconSelection" id="postgresql/postgresql-original"
+                                    class="flex justify-center items-center h-12 w-12 cursor-pointer border border-gray-500 hover:bg-emerald-400 rounded-lg"
+                                    :class="{ 'bg-emerald-400': form.icon.value.includes('postgresql/postgresql-original') }">
+                                    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/postgresql/postgresql-original.svg"
+                                        class="w-8 h-8" />
+                                </div>
+                                <div @click="iconSelection" id="mongodb/mongodb-original-wordmark"
+                                    class="flex justify-center items-center h-12 w-12 cursor-pointer border border-gray-500 hover:bg-emerald-400 rounded-lg"
+                                    :class="{ 'bg-emerald-400': form.icon.value.includes('mongodb/mongodb-original-wordmark') }">
+                                    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mongodb/mongodb-original-wordmark.svg"
+                                        class="w-8 h-8" />
+                                </div>
+                            </div>
                         </div>
-                        <div class="sm:col-span-2">
+                        <div>
                             <label for="description"
                                 class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Description</label>
                             <textarea v-model="form.description.value" id="description" rows="5"
@@ -71,20 +244,26 @@
 
 <script setup lang="ts">
 import * as Vue from 'vue';
-import { defineProps } from 'vue';
+import { defineProps, PropType } from 'vue';
 import { useToast } from "vue-toastification";
 import { formValidation } from '@/utils/formValidation';
 import { api } from '@/utils/Api';
-import TechSelection from '../Shared/TechSelection.vue';
+
+interface ISelectedTech {
+    id: number;
+    name: string;
+    description: string;
+    icon: string[];
+}
 
 const props = defineProps({
-    openable: Boolean
+    tech: Object as PropType<ISelectedTech>
 });
 
 interface IForm {
     name: { value: string, validation: string };
     description: { value: string, validation: string };
-    icon: { value: string, validation: string };
+    icon: { value: string[], validation: string };
 }
 
 interface IFormErrors {
@@ -94,9 +273,9 @@ interface IFormErrors {
 }
 
 const form = Vue.reactive<IForm>({
-    name: { value: '', validation: 'required|min:3' },
-    description: { value: '', validation: 'required|min:10' },
-    icon: { value: '', validation: "required|min:1" }
+    name: { value: props.tech?.name, validation: 'required|min:3' },
+    description: { value: props.tech?.description, validation: 'required|min:10' },
+    icon: { value: props.tech?.icon, validation: "required|min:1" }
 });
 
 const formErrors = Vue.reactive<IFormErrors>({
@@ -140,9 +319,22 @@ async function submit() {
     }
 }
 
-function onOpen() {
-    if (props.openable) {
-        open.value = true;
+function iconSelection(e: any) {
+
+    let clone = form.icon.value;
+    let indexOf = clone.indexOf(e.currentTarget.id); // -1 or index (0 - n)
+
+    if (form.icon.value.length === 0 || !Boolean(indexOf + 1)) {
+        clone.push(e.currentTarget.id);
+        form.icon.value = clone;
+        return;
     }
+
+    clone.splice(indexOf, 1);
+    form.icon.value = clone;
+}
+
+function onOpen() {
+    open.value = true;
 }
 </script>

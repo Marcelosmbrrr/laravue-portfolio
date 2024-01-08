@@ -16,7 +16,8 @@ return new class extends Migration
             $table->uuid('uuid');
             $table->string('title');
             $table->string('descripton');
-            $table->string('content');
+            $table->json('content');
+            $table->enum('category', ['delusions', 'technology']);
             $table->timestamps();
         });
     }

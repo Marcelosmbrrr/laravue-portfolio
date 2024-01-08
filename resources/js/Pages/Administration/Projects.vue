@@ -27,8 +27,8 @@
                         </div>
                         <div class="w-full flex justify-end gap-1">
                             <CreateProject :openable="selections.length === 0" />
-                            <EditProject :openable="selections.length === 1" :project="selections[0]" />
-                            <DeleteResource :openable="selections.length > 0" :ids="selections.map((item) => item.id)" />
+                            <EditProject v-if="selections.length === 1" :project="selections[0]" />
+                            <DeleteResource v-if="selections.length > 0" :ids="selections.map((item) => item.id)" />
                             <button type="button" @click="reload = !reload"
                                 class="w-full md:w-auto flex items-center justify-center py-2 px-4 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-primary-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">
                                 <svg class="w-3 h-3 text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
@@ -57,7 +57,12 @@
                                             :checked="selections.map((project) => project.id).includes(project.id)"
                                             class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
                                     </td>
-                                    <td class="px-4 py-3">{{ project.phase }}</td>
+                                    <td class="px-4 py-3">
+                                        <span
+                                            class="bg-emerald-500 text-white text-xs font-medium me-2 px-2.5 py-0.5 rounded">
+                                            {{ project.phase }}
+                                        </span>
+                                    </td>
                                     <td class="px-4 py-3">{{ project.name }}</td>
                                     <td class="px-4 py-3">{{ project.description }}</td>
                                 </tr>
@@ -120,6 +125,7 @@ export interface IProject {
     name: string;
     technology: string;
     description: string;
+    image: string;
     created_at: string;
     updated_at: string;
 }
@@ -174,7 +180,14 @@ function onSelect(e: any) {
         selectionsClone.splice(index, 1);
         selections.value = selectionsClone;
     } else {
-        selectionsClone.push(project);
+        selectionsClone.push({
+            id: project?.id,
+            name: project?.name,
+            phase: project?.phase,
+            description: project?.description,
+            technology: project?.technology,
+            image: project?.image
+        });
         selections.value = selectionsClone;
     }
 

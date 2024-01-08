@@ -34,7 +34,6 @@ import { ITechnology } from '@/Pages/Guest/Home.vue';
 const { technologies } = defineProps({ technologies: Array<ITechnology> });
 
 function getIconCdn(icon: string) {
-    const icon_splited = icon.split('-')[0];
-    return `https://cdn.jsdelivr.net/gh/devicons/devicon/icons/${icon_splited}/${icon}.svg`;
+    return `https://cdn.jsdelivr.net/gh/devicons/devicon/icons/${icon}.svg`;
 }
 </script>
