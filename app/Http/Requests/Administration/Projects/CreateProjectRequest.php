@@ -16,7 +16,7 @@ class CreateProjectRequest extends FormRequest
         return [
             "name" => "required|string",
             "description" => "required|string",
-            "technology" => "required|array",
+            "technology" => "required",
             "image" => "required"
         ];
     }

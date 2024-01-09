@@ -27,11 +27,11 @@
                                 </Link>
                             </li>
                             <li>
-                                <Link href="/posts"
+                                <div
                                     :class="{ 'text-emerald-500': $page.url === '/posts', 'text-white': $page.url !== '/posts' }"
-                                    class="block py-2 pr-4 pl-3 rounded hover:text-emerald-500 bg-emerald-500 bg-transparent lg:p-0">
+                                    class="block py-2 pr-4 pl-3 rounded hover:text-emerald-500 bg-emerald-500 bg-transparent lg:p-0 cursor-not-allowed">
                                 Postagens
-                                </Link>
+                                </div>
                             </li>
                             <div @click="logout"
                                 class="block py-2 pr-4 pl-3 text-white rounded lg:p-0 hover:text-emerald-500 cursor-pointer">

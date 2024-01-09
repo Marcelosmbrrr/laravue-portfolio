@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\v1\Administration;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use App\Models\Project;
@@ -32,7 +33,7 @@ class ProjectsController extends Controller
 
     public function store(CreateProjectRequest $request)
     {
-        dd("asd");
+        dd($request->all());
         $project = $this->projectModel->create([...$request->validated(), 'uuid' => Str::uuid()]);
 
         $image_path = "images/projects/" . $project->uuid . ".png";
@@ -44,10 +45,11 @@ class ProjectsController extends Controller
 
     public function update(UpdateProjectRequest $request, string $id)
     {
+        dd($request->all());
         $project = $this->projectModel->find($id);
         $project->update($request->validated());
 
-        if ($request->image) {
+        if (is_file($request->image)) {
             $image_path = "images/projects/" . $project->uuid . ".png";
             Storage::disk('public')->put($image_path, $request->image);
         }
@@ -55,8 +57,9 @@ class ProjectsController extends Controller
         return response("Projeto atualizado com sucesso!", 200);
     }
 
-    public function destroy(string $id)
+    public function destroy(Request $request)
     {
+        dd($request->all());
         $project = $this->projectModel->find($id);
         $project->delete();
 

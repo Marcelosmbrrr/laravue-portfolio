@@ -57,7 +57,7 @@
                                 <option value="" disabled>Select an phase</option>
                                 <option value="ideia">Idea</option>
                                 <option value="planejamento">Planning</option>
-                                <option value="development">Development</option>
+                                <option value="desenvolvimento">Development</option>
                                 <option value="produção">Production</option>
                                 <option value="finalizado">Finished</option>
                             </select>
@@ -183,7 +183,7 @@ function onOpen() {
     open.value = true;
 }
 
-function onUploadImage(uploaded_file: any) {
-    form.image = uploaded_file;
+function onUploadImage(image: any) {
+    form.image = image;
 }
 </script>

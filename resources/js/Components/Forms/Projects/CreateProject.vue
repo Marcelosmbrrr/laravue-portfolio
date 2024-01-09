@@ -57,7 +57,7 @@
                                 <option value="" disabled>Select an phase</option>
                                 <option value="ideia">Idea</option>
                                 <option value="planejamento">Planning</option>
-                                <option value="development">Development</option>
+                                <option value="desenvolvimento">Development</option>
                                 <option value="produção">Production</option>
                                 <option value="finalizado">Finished</option>
                             </select>
@@ -87,6 +87,7 @@
             </div>
         </div>
     </div>
+    
 </template>
 
 <script setup lang="ts">
@@ -110,7 +111,7 @@ interface IForm {
     description: { value: string, validation: string };
     phase: { value: "", validation: string };
     technology: { value: string, validation: string };
-    image: string
+    image?: any
 }
 
 interface IFormErrors {
@@ -125,7 +126,7 @@ const form = Vue.reactive<IForm>({
     description: { value: '', validation: 'required|min:10' },
     phase: { value: '', validation: "required|match:^(ideia|planejamento|desenvolvimento|produção|finalizado)$" },
     technology: { value: '', validation: 'required|min:1' },
-    image: ""
+    image: null
 });
 
 const formErrors = Vue.reactive<IFormErrors>({
@@ -164,6 +165,10 @@ async function submit() {
             phase: form.phase.value,
             technology: form.technology.value,
             image: form.image
+        }, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
         });
         toast.success('Project created successfully!');
         open.value = false;
@@ -180,7 +185,7 @@ function onOpen() {
     }
 }
 
-function onUploadImage(uploaded_file: any) {
-    form.image = uploaded_file;
+function onUploadImage(image: any) {
+    form.image = image;
 }
 </script>

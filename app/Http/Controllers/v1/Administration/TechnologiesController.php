@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\v1\Administration;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
 use App\Models\Technology;
 use App\Http\Requests\Administration\Technologies\CreateTechnologyRequest;
 use App\Http\Requests\Administration\Technologies\UpdateTechnologyRequest;
@@ -30,6 +31,7 @@ class TechnologiesController extends Controller
 
     public function store(CreateTechnologyRequest $request)
     {
+        dd($request->all());
         $tech = $this->technologyModel->create($request->validated());
 
         return response("Tecnologia criada com sucesso!", 201);
@@ -37,14 +39,16 @@ class TechnologiesController extends Controller
 
     public function update(UpdateTechnologyRequest $request, string $id)
     {
+        dd($request->all());
         $tech = $this->technologyModel->find($id);
         $tech->update($request->validated());
 
         return response("Tecnologia atualizada com sucesso!", 200);
     }
 
-    public function destroy(string $id)
+    public function destroy(Request $request)
     {
+        dd($request->all());
         $tech = $this->technologyModel->find($id);
         $tech->delete();
 

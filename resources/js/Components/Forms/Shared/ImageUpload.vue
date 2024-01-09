@@ -22,7 +22,7 @@ function onChange(e: any) {
     const uploaded_file = e.currentTarget.files[0];
     if (uploaded_file && uploaded_file.type.startsWith('image/')) {
         image.value = URL.createObjectURL(uploaded_file);
-        emit.call('onUploadImage', uploaded_file);
+        emit('onUploadImage', uploaded_file);
     }
 }
 </script>
