@@ -123,9 +123,9 @@ interface IFormErrors {
 }
 
 const form = Vue.reactive<IForm>({
-    name: { value: props.tech?.name, validation: 'required|min:3' },
-    description: { value: props.tech?.description, validation: 'required|min:10' },
-    icon: { value: props.tech?.icon, validation: "required|min:1" }
+    name: { value: props.tech!.name, validation: 'required|min:3' },
+    description: { value: props.tech!.description, validation: 'required|min:10' },
+    icon: { value: props.tech!.icon, validation: "required|min:1" }
 });
 
 const formErrors = Vue.reactive<IFormErrors>({

@@ -126,10 +126,10 @@ interface IFormErrors {
 }
 
 const form = Vue.reactive<IForm>({
-    name: { value: props.project?.name, validation: 'required|min:3' },
-    description: { value: props.project?.description, validation: 'required|min:10' },
-    phase: { value: props.project?.phase, validation: "required|match:^(ideia|planejamento|desenvolvimento|produção|finalizado)$" },
-    technology: { value: props.project?.technology, validation: 'required|min:1' },
+    name: { value: props.project!.name, validation: 'required|min:3' }, 
+    description: { value: props.project!.description, validation: 'required|min:10' },
+    phase: { value: props.project!.phase, validation: "required" },
+    technology: { value: props.project!.technology, validation: 'required|min:1' },
     image: ""
 });
 

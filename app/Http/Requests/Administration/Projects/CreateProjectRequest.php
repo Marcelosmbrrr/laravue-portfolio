@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Administration\Projects;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Str;
 
 class CreateProjectRequest extends FormRequest
 {
@@ -17,7 +18,14 @@ class CreateProjectRequest extends FormRequest
             "name" => "required|string",
             "description" => "required|string",
             "technology" => "required",
-            "image" => "required"
+            "image" => "sometimes|image"
         ];
+    }
+
+    protected function prepareForValidation()
+    {
+        $this->merge([
+            'uuid' => Str::uuid(), 
+        ]);
     }
 }

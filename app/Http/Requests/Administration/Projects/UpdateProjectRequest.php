@@ -17,7 +17,7 @@ class UpdateProjectRequest extends FormRequest
             "name" => "required|string",
             "description" => "required|string",
             "technology" => "required",
-            "image" => "required"
+            "image" => "sometimes|image"
         ];
     }
 }

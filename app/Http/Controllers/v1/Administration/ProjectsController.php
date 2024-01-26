@@ -5,7 +5,7 @@ namespace App\Http\Controllers\v1\Administration;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
+use Illuminate\Support\Facades\DB;
 use App\Models\Project;
 use App\Http\Requests\Administration\Projects\CreateProjectRequest;
 use App\Http\Requests\Administration\Projects\UpdateProjectRequest;
@@ -21,50 +21,62 @@ class ProjectsController extends Controller
     public function index()
     {
         $limit = request()->limit;
+        $orderBy = request()->orderBy;
         $page = request()->page;
         $search = request()->search ?? null;
 
         $data = $this->projectModel->when($search, function ($query) use ($search) {
             $query->where('name', 'like', "%{$search}%")->orWhere('description', 'like', "%{$search}%");
-        })->paginate($limit, ['*'], 'projects', $page);
+        })->orderBy($orderBy, 'asc')->paginate($limit, ['*'], 'projects', $page);
 
         return response(new ProjectsResource($data), 200);
     }
 
     public function store(CreateProjectRequest $request)
     {
-        dd($request->all());
-        $project = $this->projectModel->create([...$request->validated(), 'uuid' => Str::uuid()]);
+        DB::transaction(function () use ($request) {
 
-        $image_path = "images/projects/" . $project->uuid . ".png";
+            $image_path = "projects/no-image/img-1.png";
+            if ($request->has('image')) {
+                $image_path = "projects/$request->uuid/img-1.png";
+                $image_content = file_get_contents($request->image);
+                Storage::disk('public')->put($image_path, $image_content);
+            }
 
-        Storage::disk('public')->put($image_path, $request->image);
+            $this->projectModel->create([...$request->validated(), 'uuid' => $request->uuid, 'image_path' => $image_path]);
+        });
 
-        return response("Projeto criado com sucesso!s", 201);
+        return response("Project created successfully!", 201);
     }
 
     public function update(UpdateProjectRequest $request, string $id)
     {
-        dd($request->all());
-        $project = $this->projectModel->find($id);
-        $project->update($request->validated());
+        DB::transaction(function () use ($request, $id) {
 
-        if (is_file($request->image)) {
-            $image_path = "images/projects/" . $project->uuid . ".png";
-            Storage::disk('public')->put($image_path, $request->image);
-        }
+            $project = $this->projectModel->find($id);
+            $project->update($request->validated());
 
-        return response("Projeto atualizado com sucesso!", 200);
+            if (is_file($request->image)) {
+                $image_path = "images/projects/" . $project->uuid . ".png";
+                Storage::disk('public')->put($image_path, $request->image);
+            }
+        });
+
+        return response("Project updated successfully!", 200);
     }
 
     public function destroy(Request $request)
     {
-        dd($request->all());
-        $project = $this->projectModel->find($id);
-        $project->delete();
+        DB::transaction(function () use ($request) {
 
-        Storage::disk('public')->delete("images/projects/" . $project->uuid . ".png");
+            $project = $this->projectModel->findMany($request->ids);
+            foreach ($project as $project) {
+                $project->delete();
+                Storage::disk('public')->delete("images/projects/" . $project->uuid . ".png");
+            }
 
-        return response("Projeto deletado com sucesso!", 200);
+        });
+
+        return response("Projects deleted successfully!", 200);
     }
 }

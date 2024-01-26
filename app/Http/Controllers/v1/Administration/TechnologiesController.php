@@ -19,39 +19,39 @@ class TechnologiesController extends Controller
     public function index()
     {
         $limit = request()->limit;
+        $orderBy = request()->orderBy;
         $page = request()->page;
         $search = request()->search ?? null;
 
         $data = $this->technologyModel->when($search, function ($query) use ($search) {
             $query->where('name', 'like', "%{$search}%")->orWhere('description', 'like', "%{$search}%")->orWhere('phase', 'like', "%{$search}%");
-        })->paginate($limit, ['*'], 'technologies', $page);
+        })->orderBy($orderBy, 'asc')->paginate($limit, ['*'], 'technologies', $page);
 
         return response(new TechnologiesResource($data), 200);
     }
 
     public function store(CreateTechnologyRequest $request)
     {
-        dd($request->all());
-        $tech = $this->technologyModel->create($request->validated());
+        $this->technologyModel->create($request->validated());
 
-        return response("Tecnologia criada com sucesso!", 201);
+        return response("Technology created successfully!", 201);
     }
 
     public function update(UpdateTechnologyRequest $request, string $id)
     {
-        dd($request->all());
         $tech = $this->technologyModel->find($id);
         $tech->update($request->validated());
 
-        return response("Tecnologia atualizada com sucesso!", 200);
+        return response("Technology updated successfully!", 200);
     }
 
     public function destroy(Request $request)
     {
-        dd($request->all());
-        $tech = $this->technologyModel->find($id);
-        $tech->delete();
+        $techs = $this->technologyModel->findMany($request->ids);
+        foreach ($techs as $tech) {
+            $tech->delete();
+        }
 
-        return response("Tecnologia deletada com sucesso!", 200);
+        return response("Technologies deleted successfully!", 200);
     }
 }

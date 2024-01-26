@@ -14,9 +14,8 @@
 import * as Vue from 'vue';
 import { defineEmits } from 'vue';
 
-const image = Vue.ref<string>("");
-
 const emit = defineEmits(['onUploadImage']);
+const image = Vue.ref<string>("");
 
 function onChange(e: any) {
     const uploaded_file = e.currentTarget.files[0];
