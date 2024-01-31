@@ -14,10 +14,11 @@ return new class extends Migration
         Schema::create('posts', function (Blueprint $table) {
             $table->id();
             $table->uuid('uuid');
-            $table->string('title');
+            $table->string('name');
             $table->string('descripton');
             $table->json('content');
-            $table->enum('category', ['delusions', 'technology']);
+            $table->enum('category', ['delírios', 'tecnologia']);
+            $table->string("image_path");
             $table->timestamps();
         });
     }

@@ -3,14 +3,16 @@ import * as Vue from 'vue';
 import { router } from '@inertiajs/vue3';
 import { api } from '@/utils/Api';
 
-interface IUser {
+interface User {
     name: string;
     username: string;
 }
 
+type Theme = "light" | "dark";
+
 export const useAuth = Pinia.defineStore('auth', () => {
 
-    const user: IUser = Vue.reactive({ name: "", username: "" });
+    const user: User = Vue.reactive({ name: "", username: "" });
     const is_authenticated = Vue.ref(false);
 
     Vue.onMounted(() => {
@@ -53,4 +55,27 @@ export const useAuth = Pinia.defineStore('auth', () => {
     }
 
     return { login, logout, user, is_authenticated }
+});
+
+export const useTheme = Pinia.defineStore('theme', () => {
+
+    const theme = Vue.ref<Theme>("dark");
+
+    function toggle() {
+
+        if (theme.value === "dark") {
+            document.body.classList.remove("dark");
+        } else {
+            document.body.classList.add("dark");
+        }
+
+        theme.value = theme.value === "light" ? "dark" : "light";
+    }
+
+    function getTheme(): Theme {
+        return theme.value;
+    }
+
+    return { toggle, getTheme }
+
 });

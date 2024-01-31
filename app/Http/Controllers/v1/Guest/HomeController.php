@@ -8,21 +8,25 @@ use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use App\Models\Technology;
 use App\Models\Project;
+use App\Models\Post;
 
 class HomeController extends Controller
 {
-    public function __construct(Technology $techModel, Project $projectModel)
+    public function __construct(Technology $techModel, Project $projectModel, Post $postModel)
     {
         $this->techModel = $techModel;
         $this->projectModel = $projectModel;
+        $this->postModel = $postModel;
     }
 
-    public function __invoke(Request $request)
+    public function homePage(Request $request)
     {
         $projects = $this->projectModel->all();
         $technologies = $this->techModel->all();
+        $posts = $this->postModel->all();
 
-        $payload = [];
+        $payload = ["projects" => [], "technologies" => [], "posts" => []];
+
         foreach($projects as $index => $project){
 
             $payload['projects'][$index] = [
@@ -32,7 +36,7 @@ class HomeController extends Controller
                 "name" => $project->name,
                 "description" => $project->description,
                 "technology" => json_decode($project->technology),
-                "image" => Storage::url('projects/' . $project->uuid . '/img1.png'),
+                "image_src" => Storage::url($project->image_path),
                 "created_at" => $project->created_at,
                 "updated_at" => $project->updated_at
             ];
@@ -50,6 +54,21 @@ class HomeController extends Controller
 
         }
 
+        foreach($posts as $index => $post){
+
+            $payload['posts'][$index] = [
+                "uuid" => $post->uuid, 
+                "name" => $post->name,
+                "description" => $post->description,
+                "image_src" => Storage::url($post->image_path),
+            ];
+
+        }
+
         return Inertia::render('Guest/Home', $payload);
+    }
+
+    function postPage(Request $request){
+        // 
     }
 }

@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\v1\Administration;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
+use Inertia\Inertia;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
 use App\Models\Post;
@@ -30,6 +32,11 @@ class PostsController extends Controller
         return response(new PostsResource($data), 200);
     }
 
+    public function create()
+    {
+        return Inertia::render("Administration/Posts/CreatePost");
+    }
+
     public function store(CreatePostRequest $request)
     {
         $post = $this->postModel->create([...$request->validated(), 'uuid' => Str::uuid()]);
@@ -38,6 +45,21 @@ class PostsController extends Controller
         Storage::disk('public')->put($image_path, $request->image);
 
         return response("Post criado com sucesso!", 201);
+    }
+
+    public function edit(Request $request)
+    {
+        $post = $this->postModel->find($request->uuid);
+
+        $payload = [
+            "id" => $post->id,
+            "name" => $post->name,
+            "category" => $post->category,
+            "description" => $post->description,
+            "content" => json_decode($post->content),
+        ];
+
+        return Inertia::render("Administration/Posts/EditPost", $payload);
     }
 
     public function update(UpdatePostRequest $request, string $id)

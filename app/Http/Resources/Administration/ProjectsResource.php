@@ -19,7 +19,7 @@ class ProjectsResource extends ResourceCollection
                 "id" => $project->id,
                 "phase" => $project->phase,
                 "name" => $project->name,
-                "image_url" => Storage::disk('public')->url("images/projects/" . $project->uuid . ".png"),
+                "image_url" => Storage::disk('public')->url($project->image_path),
                 "description" => $project->description,
                 "technology" => json_decode($project->technology),
                 "created_at" => $project->created_at,

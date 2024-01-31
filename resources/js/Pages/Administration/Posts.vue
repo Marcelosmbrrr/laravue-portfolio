@@ -1,10 +1,10 @@
 <template>
     <Head title="Posts" />
     <AuthenticatedLayout>
-        <section class="bg-gray-50 dark:bg-gray-900 p-3 sm:p-5">
+        <section class="bg-white dark:bg-gray-900 p-3 sm:p-5">
             <div class="mx-auto max-w-screen-xl px-4 lg:px-12">
                 <!-- Start coding here -->
-                <div class="bg-white dark:bg-gray-800 relative shadow-md sm:rounded-lg overflow-hidden">
+                <div class="relative shadow-md sm:rounded-lg overflow-hidden bg-white dark:bg-gray-800">
                     <div
                         class="flex flex-col md:flex-row items-center justify-between space-y-3 md:space-y-0 md:space-x-4 p-4">
                         <div class="w-full md:w-1/2">
@@ -26,22 +26,34 @@
                             </form>
                         </div>
                         <div class="w-full flex justify-end gap-1">
-                            <CreatePost :openable="selections.length === 0" />
-                            <EditPost :openable="selections.length === 1" />
-                            <DeleteResource :openable="selections.length > 0" />
+                            <Link href="/posts/create" v-if="selections.length === 0" type="button"
+                                class="w-full md:w-auto flex items-center justify-center py-2 px-4 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-emerald-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">
+                                Create
+                            </Link>
+                            <Link :href="`/posts/${selections[0].uuid}/edit`" v-if="selections.length === 1" type="button"
+                                class="w-full md:w-auto flex items-center justify-center py-2 px-4 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-emerald-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">
+                                Edit
+                            </Link>
+                            <DeleteResource v-if="selections.length > 0" :ids="selections.map((item) => item.id)" />
                             <button type="button" @click="reload = !reload"
                                 class="w-full md:w-auto flex items-center justify-center py-2 px-4 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-primary-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">
-                                <svg class="w-3 h-3 text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
-                                    fill="currentColor" viewBox="0 0 18 20">
+                                <svg class="w-3 h-3 text-gray-800 dark:text-white" aria-hidden="true"
+                                    xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 18 20">
                                     <path
                                         d="M17 9a1 1 0 0 0-1 1 6.994 6.994 0 0 1-11.89 5H7a1 1 0 0 0 0-2H2.236a1 1 0 0 0-.585.07c-.019.007-.037.011-.055.018-.018.007-.028.006-.04.014-.028.015-.044.042-.069.06A.984.984 0 0 0 1 14v5a1 1 0 1 0 2 0v-2.32A8.977 8.977 0 0 0 18 10a1 1 0 0 0-1-1ZM2 10a6.994 6.994 0 0 1 11.89-5H11a1 1 0 0 0 0 2h4.768a.992.992 0 0 0 .581-.07c.019-.007.037-.011.055-.018.018-.007.027-.006.04-.014.028-.015.044-.042.07-.06A.985.985 0 0 0 17 6V1a1 1 0 1 0-2 0v2.32A8.977 8.977 0 0 0 0 10a1 1 0 1 0 2 0Z" />
                                 </svg>
                             </button>
+                            <button @click="onChangeLimit" type="button"
+                                class="w-full md:w-auto flex items-center justify-center py-2 px-4 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-emerald-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">
+                                Limit: {{ limit }}
+                            </button>
+                            <SelectOrderBy :options="['id', 'name', 'description']"
+                                @onChangeOrderBy="onChangeOrderBy" />
                         </div>
                     </div>
                     <div class="overflow-x-auto">
                         <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-                            <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                            <thead class="text-xs text-gray-700 uppercase dark:text-gray-400">
                                 <tr>
                                     <th scope="col" class="px-4 py-3">#</th>
                                     <th scope="col" class="px-4 py-3">Nome</th>
@@ -55,7 +67,7 @@
                                     <td class="px-4 py-3">
                                         <input :id="String(post.id)" @change="onSelect" type="checkbox"
                                             :checked="selections.map((post) => post.id).includes(post.id)"
-                                            class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                                            class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:border-gray-600">
                                     </td>
                                     <td class="px-4 py-3">{{ post.name }}</td>
                                     <td class="px-4 py-3">{{ post.description }}</td>
@@ -107,15 +119,16 @@
 
 <script setup lang="ts">
 import * as Vue from 'vue';
+import { Link } from '@inertiajs/vue3';
 import { api } from '@/utils/Api';
 import { Head } from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import CreatePost from '@/Components/Forms/Posts/CreatePost.vue';
-import EditPost from '@/Components/Forms/Posts/EditPost.vue';
 import DeleteResource from '@/Components/Forms/Shared/DeleteResource.vue';
+import SelectOrderBy from '@/Components/Forms/Shared/SelectOrderBy.vue';
 
 interface IPost {
-    id: number;
+    id: string;
+    uuid: string;
     name: string;
     description: string;
     image_url: string;
@@ -128,6 +141,7 @@ const posts = Vue.ref<IPost[]>([]);
 const selections = Vue.ref<IPost[]>([]);
 const pending = Vue.ref<boolean>(false);
 const limit = Vue.ref<number>(10);
+const orderBy = Vue.ref<'id' | 'phase' | 'name' | 'description'>('id');
 const page = Vue.ref<number>(1);
 const search = Vue.ref<string>('');
 const reload = Vue.ref<boolean>(false);
@@ -145,7 +159,7 @@ Vue.watch([limit, page, reload], () => {
 async function fetchPosts() {
     try {
         pending.value = true;
-        const response = await api.get(`api/posts?limit=${limit.value}&page=${page.value}&search=${search.value}`);
+        const response = await api.get(`api/posts?limit=${limit.value}&page=${page.value}&search=${search.value}&orderBy=${orderBy.value}`);
         posts.value = response.data.posts;
         totalPages.value = response.data.pagination.pages;
         totalRecords.value = response.data.pagination.records;
@@ -177,6 +191,20 @@ function onSelect(e: any) {
         selections.value = selectionsClone;
     }
 
+}
+
+function onChangeLimit() {
+    if (limit.value === 10) {
+        limit.value = 25;
+    } else if (limit.value === 25) {
+        limit.value = 50;
+    } else {
+        limit.value = 10;
+    }
+}
+
+function onChangeOrderBy(e: any) {
+    orderBy.value = e.currentTarget.value;
 }
 
 function onNextPage() {
