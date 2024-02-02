@@ -32,7 +32,11 @@ class TechnologiesController extends Controller
 
     public function store(CreateTechnologyRequest $request)
     {
-        $this->technologyModel->create($request->validated());
+        $this->technologyModel->create([
+            "name" => $request->name,
+            "description" => $request->description,
+            "icon" => json_encode($request->icon)
+        ]);
 
         return response("Technology created successfully!", 201);
     }
@@ -40,7 +44,12 @@ class TechnologiesController extends Controller
     public function update(UpdateTechnologyRequest $request, string $id)
     {
         $tech = $this->technologyModel->find($id);
-        $tech->update($request->validated());
+
+        $tech->update([
+            "name" => $request->name,
+            "description" => $request->description,
+            "icon" => json_encode($request->icon)
+        ]);
 
         return response("Technology updated successfully!", 200);
     }

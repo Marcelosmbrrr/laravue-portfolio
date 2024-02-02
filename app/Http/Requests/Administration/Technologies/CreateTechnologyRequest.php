@@ -14,7 +14,9 @@ class CreateTechnologyRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            "name" => "required|string",
+            "description" => "required|string",
+            "icon" => "required"
         ];
     }
 }

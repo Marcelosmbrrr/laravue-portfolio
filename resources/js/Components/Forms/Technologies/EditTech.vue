@@ -46,7 +46,7 @@
                                 class="block my-4 text-sm font-medium text-gray-900 dark:text-white">Seleção de
                                 Tecnologias</label>
                             <div class="w-full h-fit flex flex-wrap gap-1 pb-3">
-                                <div v-for="icon in icons" @click="iconSelection" :id="icon"
+                                <div v-for="icon in devIconsList" @click="iconSelection" :id="icon"
                                     class="flex justify-center items-center h-12 w-12 cursor-pointer border border-gray-500 hover:bg-emerald-400 rounded-lg"
                                     :class="{ 'bg-emerald-400': form.icon.value.includes(icon) }">
                                     <img :src="`https://cdn.jsdelivr.net/gh/devicons/devicon/icons/${icon}.svg`"
@@ -70,9 +70,9 @@
                         <div>
                             <label for="description"
                                 class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Description</label>
-                            <textarea v-model="form.description.value" id="description" rows="5"
+                            <input v-model="form.description.value" type="text" id="description"
                                 class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-emerald-500 focus:border-emerald-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-emerald-500 dark:focus:border-emerald-500"
-                                placeholder="Write a description..."></textarea>
+                                placeholder="Write a description...">
                             <span class="text-sm text-red-500">{{ formErrors.description.message }}</span>
                         </div>
                     </div>
@@ -94,10 +94,11 @@
 
 <script setup lang="ts">
 import * as Vue from 'vue';
-import { defineProps, PropType } from 'vue';
+import { defineProps, PropType, defineEmits } from 'vue';
 import { useToast } from "vue-toastification";
 import { formValidation } from '@/utils/formValidation';
 import { api } from '@/utils/Api';
+import { devIconsList } from '@/utils/DevIconsList';
 
 interface ISelectedTech {
     id: number;
@@ -137,38 +138,16 @@ const formErrors = Vue.reactive<IFormErrors>({
 const open = Vue.ref<boolean>(false);
 const pending = Vue.ref<boolean>(false);
 const toast = useToast();
-const icons = [
-    "html5/html5-original",
-    "css3/css3-original",
-    "javascript/javascript-original",
-    "typescript/typescript-original",
-    "php/php-original",
-    "tailwindcss/tailwindcss-plain",
-    "react/react-original",
-    "vuejs/vuejs-original",
-    "angularjs/angularjs-original",
-    "nuxtjs/nuxtjs-original",
-    "android/android-plain",
-    "docker/docker-original",
-    "amazonwebservices/amazonwebservices-original",
-    "digitalocean/digitalocean-original",
-    "laravel/laravel-plain",
-    "nodejs/nodejs-original",
-    "express/express-original",
-    "adonisjs/adonisjs-original",
-    "nestjs/nestjs-plain",
-    "bootstrap/bootstrap-original",
-    "java/java-original-wordmark",
-    "jenkins/jenkins-original",
-    "jquery/jquery-plain-wordmark",
-    "kubernetes/kubernetes-plain",
-    "nextjs/nextjs-original",
-    "mysql/mysql-original-wordmark",
-    "postgresql/postgresql-original",
-    "mongodb/mongodb-original-wordmark"
-];
+const emit = defineEmits(['onReload']);
 
 async function submit() {
+    if (validation()) {
+        pending.value = true;
+        request();
+    }
+}
+
+function validation() {
 
     let nameValidation = formValidation(form.name.value, form.name.validation);
     let descriptionValidation = formValidation(form.description.value, form.description.validation);
@@ -178,22 +157,29 @@ async function submit() {
     formErrors.description = descriptionValidation;
     formErrors.icon = iconValidation;
 
-    if (nameValidation.error || descriptionValidation.error || iconValidation.error) {
-        return;
-    }
+    return !(nameValidation.error || descriptionValidation.error || iconValidation.error);
 
-    pending.value = true;
+}
 
+async function request() {
     try {
-        await api.post('api/projects', {
+        await api.patch('api/techs/' + props.tech!.id, {
             name: form.name.value,
             description: form.description.value,
             icon: form.icon.value
+        }, {
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            responseType: 'json'
         });
-        toast.success('Tech created successfully!');
-        open.value = false;
+        toast.success('Tech edit successfully!');
+        setTimeout(() => {
+            emit('onReload', null);
+            open.value = false;
+        }, 1500);
     } catch (error) {
-        toast.error('An error occurred while creating the tech.');
+        toast.error('An error occurred while editing the tech.');
     } finally {
         pending.value = false;
     }

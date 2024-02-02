@@ -36,14 +36,23 @@ class ProjectsController extends Controller
     {
         DB::transaction(function () use ($request) {
 
-            $image_path = "projects/no-image/img-1.png";
+            $image_path = "projects/$request->uuid/img1.png";
+
             if ($request->has('image')) {
-                $image_path = "projects/$request->uuid/img-1.png";
                 $image_content = file_get_contents($request->image);
                 Storage::disk('public')->put($image_path, $image_content);
+            } else {
+                Storage::disk('public')->copy('projects/no-image/img1.png', $image_path);
             }
 
-            $this->projectModel->create([...$request->validated(), 'uuid' => $request->uuid, 'image_path' => $image_path]);
+            $this->projectModel->create([
+                'uuid' => $request->uuid,
+                'name' => $request->name,
+                'phase' => $request->phase,
+                'description' => $request->description,
+                'technology' => json_encode(explode(",", $request->technology)),
+                'image_path' => $image_path
+            ]);
         });
 
         return response("Project created successfully!", 201);
@@ -54,11 +63,16 @@ class ProjectsController extends Controller
         DB::transaction(function () use ($request, $id) {
 
             $project = $this->projectModel->find($id);
-            $project->update($request->validated());
 
-            if (is_file($request->image)) {
-                $image_path = "images/projects/" . $project->uuid . ".png";
-                Storage::disk('public')->put($image_path, $request->image);
+            $project->update([
+                'name' => $request->name,
+                'phase' => $request->phase,
+                'description' => $request->description,
+                'technology' => json_encode(explode(",", $request->technology)),
+            ]);
+
+            if ($request->has('image')) {
+                Storage::disk('public')->put($project->image_path, file_get_contents($request->image));
             }
         });
 
@@ -70,11 +84,11 @@ class ProjectsController extends Controller
         DB::transaction(function () use ($request) {
 
             $project = $this->projectModel->findMany($request->ids);
+
             foreach ($project as $project) {
                 $project->delete();
-                Storage::disk('public')->delete("images/projects/" . $project->uuid . ".png");
+                Storage::disk('public')->delete($project->image_path);
             }
-
         });
 
         return response("Projects deleted successfully!", 200);

@@ -26,9 +26,9 @@
                             </form>
                         </div>
                         <div class="w-full flex justify-end gap-1">
-                            <CreateTech :openable="selections.length === 0" />
-                            <EditTech v-if="selections.length === 1" :tech="selections[0]" />
-                            <DeleteResource v-if="selections.length > 0" :ids="selections.map((item) => item.id)" />
+                            <CreateTech v-if="selections.length === 0" :openable="selections.length === 0" @onReload="onReload" />
+                            <EditTech v-if="selections.length === 1" :tech="selections[0]" @onReload="onReload" />
+                            <DeleteResource v-if="selections.length > 0" :ids="selections.map((item) => item.id)" :url="'api/techs/delete'" @onReload="onReload" />
                             <button type="button" @click="reload = !reload"
                                 class="w-full md:w-auto flex items-center justify-center py-2 px-4 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-primary-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">
                                 <svg class="w-3 h-3 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
@@ -41,7 +41,6 @@
                                 class="w-full md:w-auto flex items-center justify-center py-2 px-4 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-emerald-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">
                                 Limit: {{ limit }}
                             </button>
-                            <SelectOrderBy :options="['id', 'name', 'description']" @onChangeOrderBy="onChangeOrderBy" />
                         </div>
                     </div>
                     <div class="overflow-x-auto">
@@ -116,7 +115,6 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import CreateTech from '@/Components/Forms/Technologies/CreateTech.vue';
 import EditTech from '@/Components/Forms/Technologies/EditTech.vue';
 import DeleteResource from '@/Components/Forms/Shared/DeleteResource.vue';
-import SelectOrderBy from '@/Components/Forms/Shared/SelectOrderBy.vue';
 
 interface ITech {
     id: number;
@@ -211,7 +209,8 @@ function onChangeLimit() {
     }
 }
 
-function onChangeOrderBy(e: any) {
-    orderBy.value = e.currentTarget.value;
+function onReload(){
+    reload.value = !reload.value;
+    selections.value = [];
 }
 </script>

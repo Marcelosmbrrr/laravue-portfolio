@@ -15,21 +15,21 @@
                             <li>
                                 <Link href="/projects"
                                     :class="{ 'text-emerald-500': $page.url === '/projects', 'text-gray-800 dark:text-white': $page.url !== '/projects' }"
-                                    class="block py-2 pr-4 pl-3 rounded hover:text-emerald-500 bg-emerald-500 bg-transparent lg:p-0">
+                                    class="block py-2 pr-4 pl-3 rounded hover:text-emerald-500 dark:hover:text-emerald-500 bg-emerald-500 bg-transparent lg:p-0">
                                 Projetos
                                 </Link>
                             </li>
                             <li>
                                 <Link href="/technologies"
                                     :class="{ 'text-emerald-500': $page.url === '/technologies', 'text-gray-800 dark:text-white': $page.url !== '/technologies' }"
-                                    class="block py-2 pr-4 pl-3 rounded hover:text-emerald-500 bg-emerald-500 bg-transparent lg:p-0">
+                                    class="block py-2 pr-4 pl-3 rounded hover:text-emerald-500 dark:hover:text-emerald-500 bg-emerald-500 bg-transparent lg:p-0">
                                 Tecnologias
                                 </Link>
                             </li>
                             <li>
                                 <Link href="/posts"
                                     :class="{ 'text-emerald-500': $page.url === '/posts', 'text-gray-800 dark:text-white': $page.url !== '/posts' }"
-                                    class="block py-2 pr-4 pl-3 rounded hover:text-emerald-500 bg-emerald-500 bg-transparent lg:p-0">
+                                    class="block py-2 pr-4 pl-3 rounded hover:text-emerald-500 dark:hover:text-emerald-500 bg-emerald-500 bg-transparent lg:p-0">
                                 Postagens
                                 </Link>
                             </li>

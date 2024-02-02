@@ -16,6 +16,7 @@ class CreateProjectRequest extends FormRequest
     {
         return [
             "name" => "required|string",
+            "phase" => "required|string",
             "description" => "required|string",
             "technology" => "required",
             "image" => "sometimes|image"
@@ -25,7 +26,7 @@ class CreateProjectRequest extends FormRequest
     protected function prepareForValidation()
     {
         $this->merge([
-            'uuid' => Str::uuid(), 
+            'uuid' => Str::uuid()
         ]);
     }
 }

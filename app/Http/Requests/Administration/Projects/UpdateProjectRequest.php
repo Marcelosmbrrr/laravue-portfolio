@@ -15,9 +15,9 @@ class UpdateProjectRequest extends FormRequest
     {
         return [
             "name" => "required|string",
+            "phase" => "required|string",
             "description" => "required|string",
-            "technology" => "required",
-            "image" => "sometimes|image"
+            "technology" => "required"
         ];
     }
 }

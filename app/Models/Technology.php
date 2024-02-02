@@ -10,4 +10,5 @@ class Technology extends Model
     use HasFactory;
 
     protected $table = 'technologies';
+    protected $guarded = [];
 }

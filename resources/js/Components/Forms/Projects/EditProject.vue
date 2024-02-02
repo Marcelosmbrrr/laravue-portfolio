@@ -17,7 +17,7 @@
                 <!-- Modal header -->
                 <div class="flex justify-between items-center pb-4 mb-4 rounded-t border-b sm:mb-5 dark:border-gray-600">
                     <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
-                        Create Project
+                        Edit Project
                     </h3>
                     <button @click="open = false" type="button"
                         class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white"
@@ -44,7 +44,7 @@
                         <div>
                             <label for="tech"
                                 class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Technology</label>
-                            <input v-model="form.technology.value" pattern="\w+(?:,\w+)*" type="text" id="tech"
+                            <input v-model="form.technology.value" type="text" id="tech"
                                 class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-emerald-600 focus:border-emerald-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-emerald-500 dark:focus:border-emerald-500"
                                 placeholder="Ex: html,css,js">
                             <span class="text-sm text-red-500">{{ formErrors.technology.message }}</span>
@@ -91,7 +91,7 @@
 
 <script setup lang="ts">
 import * as Vue from 'vue';
-import { defineProps, PropType } from 'vue';
+import { defineProps, PropType, defineEmits } from 'vue';
 import { useToast } from "vue-toastification";
 import { formValidation } from '@/utils/formValidation';
 import ImageUpload from '../Shared/ImageUpload.vue';
@@ -113,9 +113,9 @@ const props = defineProps({
 interface IForm {
     name: { value: string, validation: string };
     description: { value: string, validation: string };
-    phase: { value: "", validation: string };
+    phase: { value: string, validation: string };
     technology: { value: string, validation: string };
-    image: string
+    image: any
 }
 
 interface IFormErrors {
@@ -126,11 +126,11 @@ interface IFormErrors {
 }
 
 const form = Vue.reactive<IForm>({
-    name: { value: props.project!.name, validation: 'required|min:3' }, 
+    name: { value: props.project!.name, validation: 'required|min:3' },
     description: { value: props.project!.description, validation: 'required|min:10' },
     phase: { value: props.project!.phase, validation: "required" },
     technology: { value: props.project!.technology, validation: 'required|min:1' },
-    image: ""
+    image: null
 });
 
 const formErrors = Vue.reactive<IFormErrors>({
@@ -143,37 +143,56 @@ const formErrors = Vue.reactive<IFormErrors>({
 const open = Vue.ref<boolean>(false);
 const pending = Vue.ref<boolean>(false);
 const toast = useToast();
+const emit = defineEmits(['onReload']);
 
 async function submit() {
+    if (validation()) {
+        pending.value = true;
+        request();
+    }
+}
+
+function validation() {
 
     let nameValidation = formValidation(form.name.value, form.name.validation);
     let descriptionValidation = formValidation(form.description.value, form.description.validation);
     let phaseValidation = formValidation(form.phase.value, form.phase.validation);
-    let technologyValidation = formValidation(form.technology.value.split(","), form.technology.validation);
+    let technologyValidation = formValidation(form.technology.value, form.technology.validation);
 
     formErrors.name = nameValidation;
     formErrors.description = descriptionValidation;
     formErrors.phase = phaseValidation;
     formErrors.technology = technologyValidation;
 
-    if (nameValidation.error || descriptionValidation.error || phaseValidation.error || technologyValidation.error) {
-        return;
-    }
+    return !(nameValidation.error || descriptionValidation.error || phaseValidation.error || technologyValidation.error);
+}
 
-    pending.value = true;
+async function request() {
+
+    const formData = new FormData();
+    formData.append('name', form.name.value)
+    formData.append('description', form.description.value)
+    formData.append('phase', form.phase.value)
+    formData.append('technology', form.technology.value)
+    if (form.image) {
+        formData.append('image', form.image)
+    }
+    formData.append('_method', 'PATCH');
 
     try {
-        await api.patch('api/projects', {
-            name: form.name.value,
-            description: form.description.value,
-            phase: form.phase.value,
-            technology: form.technology.value,
-            image: form.image
+        await api.post('api/projects/' + props.project!.id, formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            },
+            responseType: 'json'
         });
-        toast.success('Project created successfully!');
-        open.value = false;
+        toast.success('Project edited successfully!');
+        setTimeout(() => {
+            emit('onReload', null);
+            open.value = false;
+        }, 1500);
     } catch (error) {
-        toast.error('An error occurred while creating the project.');
+        toast.error('An error occurred while editing the project.');
     } finally {
         pending.value = false;
     }

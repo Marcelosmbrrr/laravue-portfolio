@@ -35,9 +35,9 @@
                         class="text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm px-5 py-2.5 me-2 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700">
                         Cancelar
                     </button>
-                    <button
+                    <button @click="onSubmit"
                         class="text-white bg-emerald-700 hover:bg-emerald-800 focus:ring-4 focus:outline-none focus:ring-emerald-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-emerald-600 dark:hover:bg-emerald-700 dark:focus:ring-emerald-800">
-                        Confirmar
+                        {{ pending ? 'Loading ...' : 'Confirm' }}
                     </button>
                 </div>
             </div>
@@ -47,10 +47,13 @@
 
 <script setup lang="ts">
 import * as Vue from 'vue';
-import { defineProps } from 'vue';
+import { defineProps, PropType, defineEmits } from 'vue';
+import { useToast } from "vue-toastification";
+import { api } from '@/utils/Api';
 
 const props = defineProps({
-    ids: Array
+    ids: Array as PropType<string[]>,
+    url: String
 });
 
 function onOpen() {
@@ -58,4 +61,30 @@ function onOpen() {
 }
 
 const open = Vue.ref<boolean>(false);
+const pending = Vue.ref<boolean>(false);
+const emit = defineEmits(['onReload']);
+const toast = useToast();
+
+async function onSubmit() {
+    try {
+        pending.value = true;
+        await api.delete(props.url, {
+            data: { ids: props.ids },
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            responseType: 'json'
+        });
+        toast.success('Resource deleted successfully!');
+        setTimeout(() => {
+            emit('onReload', null);
+            open.value = false;
+        }, 1500);
+    } catch (error) {
+        toast.error('An error occurred while deleting resource.');
+    } finally {
+        pending.value = false;
+    }
+
+}
 </script>

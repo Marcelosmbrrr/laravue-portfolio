@@ -26,13 +26,13 @@
                             </form>
                         </div>
                         <div class="w-full flex justify-end gap-1">
-                            <CreateProject :openable="selections.length === 0" />
-                            <EditProject v-if="selections.length === 1" :project="selections[0]" />
-                            <DeleteResource v-if="selections.length > 0" :ids="selections.map((item) => item.id)" />
+                            <CreateProject v-if="selections.length === 0" :openable="selections.length === 0" @onReload="onReload" />
+                            <EditProject v-if="selections.length === 1" :project="selections[0]" @onReload="onReload" />
+                            <DeleteResource v-if="selections.length > 0" :ids="selections.map((item) => item.id)" :url="'api/projects/delete'" @onReload="onReload" />
                             <button type="button" @click="reload = !reload"
                                 class="w-full md:w-auto flex items-center justify-center py-2 px-4 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-primary-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">
-                                <svg class="w-3 h-3 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
-                                    fill="currentColor" viewBox="0 0 18 20">
+                                <svg class="w-3 h-3 text-gray-800 dark:text-white" aria-hidden="true"
+                                    xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 18 20">
                                     <path
                                         d="M17 9a1 1 0 0 0-1 1 6.994 6.994 0 0 1-11.89 5H7a1 1 0 0 0 0-2H2.236a1 1 0 0 0-.585.07c-.019.007-.037.011-.055.018-.018.007-.028.006-.04.014-.028.015-.044.042-.069.06A.984.984 0 0 0 1 14v5a1 1 0 1 0 2 0v-2.32A8.977 8.977 0 0 0 18 10a1 1 0 0 0-1-1ZM2 10a6.994 6.994 0 0 1 11.89-5H11a1 1 0 0 0 0 2h4.768a.992.992 0 0 0 .581-.07c.019-.007.037-.011.055-.018.018-.007.027-.006.04-.014.028-.015.044-.042.07-.06A.985.985 0 0 0 17 6V1a1 1 0 1 0-2 0v2.32A8.977 8.977 0 0 0 0 10a1 1 0 1 0 2 0Z" />
                                 </svg>
@@ -41,8 +41,6 @@
                                 class="w-full md:w-auto flex items-center justify-center py-2 px-4 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-emerald-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">
                                 Limit: {{ limit }}
                             </button>
-                            <SelectOrderBy :options="['id', 'phase', 'name', 'description']"
-                                @onChangeOrderBy="onChangeOrderBy" />
                         </div>
                     </div>
                     <div class="overflow-x-auto">
@@ -124,7 +122,6 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import CreateProject from '@/Components/Forms/Projects/CreateProject.vue';
 import EditProject from '@/Components/Forms/Projects/EditProject.vue';
 import DeleteResource from '@/Components/Forms/Shared/DeleteResource.vue';
-import SelectOrderBy from '@/Components/Forms/Shared/SelectOrderBy.vue';
 
 export interface IProject {
     id: number;
@@ -213,6 +210,11 @@ function onPreviousPage() {
     }
 }
 
+function onReload() {
+    reload.value = !reload.value;
+    selections.value = [];
+}
+
 function onChangeLimit() {
     if (limit.value === 10) {
         limit.value = 25;
@@ -221,9 +223,5 @@ function onChangeLimit() {
     } else {
         limit.value = 10;
     }
-}
-
-function onChangeOrderBy(e: any) {
-    orderBy.value = e.currentTarget.value;
 }
 </script>

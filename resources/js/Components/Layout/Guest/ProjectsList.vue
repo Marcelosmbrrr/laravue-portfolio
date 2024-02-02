@@ -6,7 +6,8 @@
             </div>
             <h1 class="text-2xl font-bold text-white"><span class="text-emerald-400">Projetos</span> recentes</h1>
         </div>
-        <div class="flex justify-start flex-wrap pb-3 gap-3 mt-5 cursor-pointer rounded-l-lg">
+
+        <div class="flex justify-start flex-wrap pb-3 mt-5 gap-3 cursor-pointer rounded-l-lg">
 
             <div v-if="projects!.length > 0" v-for="project in projects" :key="project.id"
                 class="max-w-sm bg-white border border-gray-200 rounded-lg shadow hover:shadow-[5px_5px_rgba(0,_98,_90,_0.4),_10px_10px_rgba(0,_98,_90,_0.3),_15px_15px_rgba(0,_98,_90,_0.2),_20px_20px_rgba(0,_98,_90,_0.1),_25px_25px_rgba(0,_98,_90,_0.05)] dark:bg-gray-800 dark:border-gray-700">

@@ -49,7 +49,7 @@ class PostsController extends Controller
 
     public function edit(Request $request)
     {
-        $post = $this->postModel->find($request->uuid);
+        $post = $this->postModel->where("uuid", $request->uuid)->first();
 
         $payload = [
             "id" => $post->id,

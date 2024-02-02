@@ -1,6 +1,6 @@
 <template>
     <header>
-        <nav class="bg-white border-gray-200 px-4 lg:px-6 py-2.5 bg-white dark:bg-gray-900">
+        <nav class="border-gray-200 px-4 lg:px-6 py-2.5 bg-white dark:bg-gray-900">
             <div class="flex flex-wrap justify-between items-center mx-auto max-w-screen-xl">
                 <div class="flex items-center">
                     <span class="text-emerald-500 mr-2">
@@ -11,15 +11,15 @@
                 <div class="flex justify-between items-center w-auto order-1">
                     <ul class="flex items-center mt-4 font-medium space-x-8">
                         <a href="https://github.com/Marcelosmbrrr" target="_blank"
-                            class="block py-2 text-gray-800 dark:text-white rounded lg:p-0 hover:text-emerald-500 cursor-pointer">
+                            class="block py-2 text-gray-800 dark:text-white rounded lg:p-0 hover:text-emerald-500 dark:hover:text-emerald-500 cursor-pointer">
                             Github
                         </a>
                         <a href="https://www.linkedin.com/in/marcelosmbr/" target="_blank"
-                            class="flex py-2 text-gray-800 dark:text-white rounded lg:p-0 hover:text-emerald-500 cursor-pointer">
+                            class="flex py-2 text-gray-800 dark:text-white rounded lg:p-0 hover:text-emerald-500 dark:hover:text-emerald-500 cursor-pointer">
                             Linkedin
                         </a>
                         <li
-                            class="flex items-center text-gray-800 dark:text-white rounded lg:p-0 hover:text-emerald-500 cursor-not-allowed">
+                            class="flex items-center text-gray-800 dark:text-white rounded lg:p-0 hover:text-emerald-500 dark:hover:text-emerald-500 cursor-not-allowed">
                             <span>Idioma: </span>
                             <img src="https://cdn-icons-png.flaticon.com/512/3955/3955549.png" width="35" height="20" />
                         </li>

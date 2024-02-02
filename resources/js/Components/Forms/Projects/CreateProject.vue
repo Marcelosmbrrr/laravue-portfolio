@@ -87,12 +87,11 @@
             </div>
         </div>
     </div>
-    
 </template>
 
 <script setup lang="ts">
 import * as Vue from 'vue';
-import { defineProps } from 'vue';
+import { defineProps, defineEmits } from 'vue';
 import { useToast } from "vue-toastification";
 import { formValidation } from '@/utils/formValidation';
 import ImageUpload from '../Shared/ImageUpload.vue';
@@ -139,25 +138,32 @@ const formErrors = Vue.reactive<IFormErrors>({
 const open = Vue.ref<boolean>(false);
 const pending = Vue.ref<boolean>(false);
 const toast = useToast();
+const emit = defineEmits(['onReload']);
 
 async function submit() {
+    if (validation()) {
+        pending.value = true;
+        request();
+    }
+}
+
+function validation() {
 
     let nameValidation = formValidation(form.name.value, form.name.validation);
     let descriptionValidation = formValidation(form.description.value, form.description.validation);
     let phaseValidation = formValidation(form.phase.value, form.phase.validation);
-    let technologyValidation = formValidation(form.technology.value.split(","), form.technology.validation);
+    let technologyValidation = formValidation(form.technology.value, form.technology.validation);
 
     formErrors.name = nameValidation;
     formErrors.description = descriptionValidation;
     formErrors.phase = phaseValidation;
     formErrors.technology = technologyValidation;
 
-    if (nameValidation.error || descriptionValidation.error || phaseValidation.error || technologyValidation.error) {
-        return;
-    }
+    return !(nameValidation.error || descriptionValidation.error || phaseValidation.error || technologyValidation.error);
 
-    pending.value = true;
+}
 
+async function request() {
     try {
         await api.post('api/projects', {
             name: form.name.value,
@@ -168,10 +174,14 @@ async function submit() {
         }, {
             headers: {
                 'Content-Type': 'multipart/form-data'
-            }
+            },
+            responseType: 'json'
         });
         toast.success('Project created successfully!');
-        open.value = false;
+        setTimeout(() => {
+            emit('onReload', null);
+            open.value = false;
+        }, 1500);
     } catch (error) {
         toast.error('An error occurred while creating the project.');
     } finally {
