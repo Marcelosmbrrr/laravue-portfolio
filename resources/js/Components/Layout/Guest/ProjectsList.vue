@@ -11,8 +11,8 @@
 
             <div v-if="projects!.length > 0" v-for="project in projects" :key="project.id"
                 class="max-w-sm bg-white border border-gray-200 rounded-lg shadow hover:shadow-[5px_5px_rgba(0,_98,_90,_0.4),_10px_10px_rgba(0,_98,_90,_0.3),_15px_15px_rgba(0,_98,_90,_0.2),_20px_20px_rgba(0,_98,_90,_0.1),_25px_25px_rgba(0,_98,_90,_0.05)] dark:bg-gray-800 dark:border-gray-700">
-                <div class='relative h-56 overflow-y-hidden'>
-                    <img class="rounded-t-lg" :src="project.image_src" alt="project-1 image" />
+                <div class='relative h-56 w-full overflow-y-hidden'>
+                    <img class="rounded-t-lg h-full w-full" :src="project.image_src" alt="project image" />
                 </div>
                 <div class="p-5">
                     <div class="flex justify-between items-center mb-2">

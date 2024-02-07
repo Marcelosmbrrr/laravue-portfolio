@@ -1,5 +1,5 @@
 <template>
-    <Head title="Post - Edit" />
+    <Head title="Edit Post" />
     <div class="flex flex-col h-screen">
         <header>
             <nav class="bg-white border-gray-200 px-4 py-2.5 dark:bg-gray-900">
@@ -12,9 +12,13 @@
                             edition</span>
                     </div>
                     <div class="flex justify-between items-center w-auto order-1">
-                        <ul class="flex items-center mt-4 font-medium space-x-8">
+                        <ul class="flex items-center mt-4 font-medium space-x-2">
+                            <button type="submit" form="post-edition"
+                                class="w-full text-white bg-emerald-600 hover:bg-emerald-700 focus:ring-4 focus:outline-none focus:ring-emerald-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-emerald-600 dark:hover:bg-emerald-700 dark:focus:ring-emerald-800">
+                                {{ pending ? 'Loading ...' : 'Confirm' }}
+                            </button>
                             <Link href="/posts" target="_blank"
-                                class="flex py-2 text-gray-800 dark:text-white rounded lg:p-0 hover:text-emerald-500 dark:hover:text-emerald-500 cursor-pointer">
+                                class="text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-gray-900 dark:text-white dark:border-gray-700 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700">
                             Voltar
                             </Link>
                             <li v-if="getTheme() === 'dark'"
@@ -40,41 +44,41 @@
             </nav>
         </header>
         <main class="grow px-5 bg-white dark:bg-gray-900">
-            <form @submit.prevent="submit" class="mx-auto max-w-7xl mt-16">
+            <form id="post-edition" @submit.prevent="submit" class="mx-auto max-w-7xl mt-8">
                 <div class="mb-5">
                     <label for="name" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Name</label>
-                    <input type="text" id="name" v-model="form.name.value"
+                    <input type="text" id="name" v-model="formSchema.name.value"
                         class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                         placeholder="Type post name">
                 </div>
                 <div class="mb-5">
                     <label for="description"
                         class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Description</label>
-                    <input type="text" id="description" v-model="form.description.value"
+                    <input type="text" id="description" v-model="formSchema.description.value"
                         class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                         placeholder="Type post description">
                 </div>
                 <div class="mb-5">
                     <label for="countries" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Select
                         category</label>
-                    <select id="countries" v-model="form.category.value"
+                    <select id="countries" v-model="formSchema.category.value"
                         class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                        <option selected disabled>Choose an option</option>
-                        <option value="technology">Technology</option>
-                        <option value="delusions">Delusions</option>
+                        <option value="" disabled>Choose an option</option>
+                        <option value="tecnologia">Technology</option>
+                        <option value="delírios">Delusions</option>
                     </select>
                 </div>
                 <div class="mb-5">
                     <div
                         class="w-full mb-4 border border-gray-200 rounded-lg bg-gray-50 dark:bg-gray-700 dark:border-gray-600">
                         <div class="px-4 py-2 bg-white rounded-t-lg dark:bg-gray-800">
-                            <textarea id="comment" rows="18" v-model="form.content.value"
+                            <textarea id="comment" rows="18" v-model="formSchema.content.value"
                                 class="w-full px-0 text-sm text-gray-900 bg-white border-0 dark:bg-gray-800 focus:ring-0 dark:text-white dark:placeholder-gray-400"
                                 placeholder="Write post content"></textarea>
                         </div>
                     </div>
                 </div>
-                <div class="mb-5">
+                <div class="w-full">
                     <ImageUpload @onUploadImage="onUploadImage" />
                 </div>
             </form>
@@ -84,6 +88,7 @@
 
 <script setup lang="ts">
 import * as Vue from 'vue';
+import { defineProps, PropType, } from 'vue';
 import { Link, router } from '@inertiajs/vue3';
 import { Head } from '@inertiajs/vue3';
 import { useTheme } from '@/store/store';
@@ -93,12 +98,22 @@ import ImageUpload from '@/Components/Forms/Shared/ImageUpload.vue';
 import TagIcon from '@/Components/Icons/TagIcon.vue';
 import { api } from '@/utils/Api';
 
+interface IPost {
+    id: string;
+    name: string;
+    description: string;
+    category: string;
+    content: string[]
+}
+
+const props = defineProps({ post: Object as PropType<IPost> });
+
 const formSchema = Vue.reactive({
-    name: { value: '', validation: 'required|min:3' },
-    description: { value: '', validation: 'required|min:20|max:100' },
-    category: { value: "", validation: 'required|match:delírios,tecnologia' },
-    content: { value: [] as string[], validation: "required|array" },
-    images: { value: [] as any[], validation: "required|array" }
+    name: { value: props.post?.name, rule: 'required|min:3' },
+    description: { value: props.post?.description, rule: 'required|min:20|max:100' },
+    category: { value: props.post?.category, rule: 'required|match:delírios,tecnologia' },
+    content: { value: props.post?.content.join("\n\n"), rule: "required" },
+    image: { value: null, rule: "required" }
 })
 
 const formValidation = Vue.reactive({
@@ -106,7 +121,7 @@ const formValidation = Vue.reactive({
     description: { error: false, message: "" },
     category: { error: false, message: "" },
     content: { error: false, message: "" },
-    images: { error: false, message: "" }
+    image: { error: false, message: "" }
 })
 
 const { getTheme, toggle } = useTheme();
@@ -119,15 +134,22 @@ async function submit() {
     Object.assign(formValidation, formValidationResults.results);
 
     if (formValidationResults.is_valid) {
+
+        let payload: { [key: string]: any } = {
+            name: formSchema.name.value,
+            description: formSchema.description.value,
+            category: formSchema.category.value,
+            content: formSchema.content.value?.split("\n\n"),
+            _method: "PATCH"
+        }
+
+        if (formSchema.image.value) {
+            payload.image = formSchema.image.value;
+        }
+
         try {
             pending.value = true;
-            await api.post('api/projects', {
-                name: formSchema.name.value,
-                description: formSchema.description.value,
-                category: formSchema.category.value,
-                content: formSchema.content.value,
-                images: formSchema.images.value
-            }, {
+            await api.post('api/posts/' + props.post?.id, payload, {
                 headers: {
                     'Content-Type': 'multipart/form-data'
                 },
@@ -142,10 +164,11 @@ async function submit() {
         } finally {
             pending.value = false;
         }
+
     }
 }
 
 function onUploadImage(img_array: any[]) {
-    formSchema.images.value = img_array;
+    formSchema.image.value = img_array[0];
 }
 </script>

@@ -18,8 +18,8 @@ class CreateProjectRequest extends FormRequest
             "name" => "required|string",
             "phase" => "required|string",
             "description" => "required|string",
-            "technology" => "required",
-            "image" => "sometimes|image"
+            "technology" => "required|array",
+            "image" => "sometimes|image|dimensions:ratio_between=1.495:1,1.776:1"
         ];
     }
 

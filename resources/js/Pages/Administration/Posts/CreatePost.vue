@@ -1,5 +1,5 @@
 <template>
-    <Head title="Post - Edit" />
+    <Head title="Create Post" />
     <div class="flex flex-col h-screen">
         <header>
             <nav class="bg-white border-gray-200 px-4 py-2.5 dark:bg-gray-900">
@@ -12,9 +12,13 @@
                             creation</span>
                     </div>
                     <div class="flex justify-between items-center w-auto order-1">
-                        <ul class="flex items-center mt-4 font-medium space-x-8">
+                        <ul class="flex items-center mt-4 font-medium space-x-2">
+                            <button type="submit" form="post-creation"
+                                class="w-full text-white bg-emerald-600 hover:bg-emerald-700 focus:ring-4 focus:outline-none focus:ring-emerald-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-emerald-600 dark:hover:bg-emerald-700 dark:focus:ring-emerald-800">
+                                {{ pending ? 'Loading ...' : 'Confirm' }}
+                            </button>
                             <Link href="/posts" target="_blank"
-                                class="flex py-2 text-gray-800 dark:text-white rounded lg:p-0 hover:text-emerald-500 dark:hover:text-emerald-500 cursor-pointer">
+                                class="text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-gray-900 dark:text-white dark:border-gray-700 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700">
                             Voltar
                             </Link>
                             <li v-if="getTheme() === 'dark'"
@@ -40,12 +44,13 @@
             </nav>
         </header>
         <main class="grow px-5 bg-white dark:bg-gray-900">
-            <form @submit.prevent="submit" class="mx-auto max-w-7xl mt-16">
+            <form id="post-creation" @submit.prevent="submit" class="mx-auto max-w-7xl mt-8">
                 <div class="mb-5">
                     <label for="name" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Name</label>
                     <input type="text" id="name" v-model="formSchema.name.value"
                         class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                         placeholder="Type post name">
+                    <span class="text-sm text-red-500">{{ formValidation.name.message }}</span>
                 </div>
                 <div class="mb-5">
                     <label for="description"
@@ -53,16 +58,18 @@
                     <input type="text" id="description" v-model="formSchema.description.value"
                         class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                         placeholder="Type post description">
+                    <span class="text-sm text-red-500">{{ formValidation.description.message }}</span>
                 </div>
                 <div class="mb-5">
                     <label for="countries" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Select
                         category</label>
                     <select id="countries" v-model="formSchema.category.value"
                         class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                        <option selected disabled>Choose an option</option>
-                        <option value="technology">Technology</option>
-                        <option value="delusions">Delusions</option>
+                        <option value="" disabled>Choose an option</option>
+                        <option value="tecnologia">Technology</option>
+                        <option value="delírios">Delusions</option>
                     </select>
+                    <span class="text-sm text-red-500">{{ formValidation.category.message }}</span>
                 </div>
                 <div class="mb-5">
                     <div
@@ -73,8 +80,9 @@
                                 placeholder="Write post content"></textarea>
                         </div>
                     </div>
+                    <span class="text-sm text-red-500">{{ formValidation.content.message }}</span>
                 </div>
-                <div class="mb-5">
+                <div class="w-full">
                     <ImageUpload @onUploadImage="onUploadImage" />
                 </div>
             </form>
@@ -94,11 +102,11 @@ import TagIcon from '@/Components/Icons/TagIcon.vue';
 import { api } from '@/utils/Api';
 
 const formSchema = Vue.reactive({
-    name: { value: '', validation: 'required|min:3' },
-    description: { value: '', validation: 'required|min:20|max:100' },
-    category: { value: "", validation: 'required|match:delírios,tecnologia' },
-    content: { value: [] as string[], validation: "required|array" },
-    images: { value: [] as any[], validation: "required|array" }
+    name: { value: '', rule: 'required|min:3' },
+    description: { value: '', rule: 'required|min:20|max:100' },
+    category: { value: "", rule: 'required|match:delírios,tecnologia' },
+    content: { value: "", rule: "required" },
+    image: { value: null, rule: "required" }
 })
 
 const formValidation = Vue.reactive({
@@ -106,7 +114,7 @@ const formValidation = Vue.reactive({
     description: { error: false, message: "" },
     category: { error: false, message: "" },
     content: { error: false, message: "" },
-    images: { error: false, message: "" }
+    image: { error: false, message: "" }
 })
 
 const { getTheme, toggle } = useTheme();
@@ -119,14 +127,15 @@ async function submit() {
     Object.assign(formValidation, formValidationResults.results);
 
     if (formValidationResults.is_valid) {
+
         try {
             pending.value = true;
-            await api.post('api/projects', {
+            await api.post('api/posts', {
                 name: formSchema.name.value,
                 description: formSchema.description.value,
                 category: formSchema.category.value,
-                content: formSchema.content.value,
-                images: formSchema.images.value
+                content: formSchema.content.value.split("\n\n"),
+                image: formSchema.image.value
             }, {
                 headers: {
                     'Content-Type': 'multipart/form-data'
@@ -142,10 +151,11 @@ async function submit() {
         } finally {
             pending.value = false;
         }
+        
     }
 }
 
 function onUploadImage(img_array: any[]) {
-    formSchema.images.value = img_array;
+    formSchema.image.value = img_array[0];
 }
 </script>

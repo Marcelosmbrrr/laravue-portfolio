@@ -15,9 +15,10 @@ return new class extends Migration
             $table->id();
             $table->uuid('uuid');
             $table->string('name');
-            $table->string('descripton');
+            $table->string('description');
             $table->json('content');
             $table->enum('category', ['delírios', 'tecnologia']);
+            $table->string("image_path");
             $table->timestamps();
         });
     }

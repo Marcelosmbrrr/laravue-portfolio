@@ -4,6 +4,7 @@ namespace App\Http\Controllers\v1\Administration;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Storage;
 use App\Models\Post;
@@ -39,43 +40,36 @@ class PostsController extends Controller
 
     public function store(CreatePostRequest $request)
     {
-        dd($request->all());
-        $post = $this->postModel->create([
-            'uuid' => $request->uuid,
-            'name' => $request->name,
-            'category' => $request->category,
-            'description' => $request->description,
-            'content' => json_encode(explode(",", $request->content))
-        ]);
+        DB::transaction(function () use ($request) {
 
-        if ($request->has("images")) {
-            foreach ($request->images as $index => $image) {
-                $image_content = file_get_contents($request->image);
-                $image_path = "posts/$post->uuid/img" . $index + 1 . ".png";
-                Storage::disk('public')->put($image_path, $image_content);
-            }
-        }
+            $image_path = "posts/$request->uuid/img1.png";
 
-        return response("Post criado com sucesso!", 201);
+            $image_content = file_get_contents($request->image);
+            Storage::disk('public')->put($image_path, $image_content);
+
+            $this->postModel->create([
+                'uuid' => $request->uuid,
+                'name' => $request->name,
+                'category' => $request->category,
+                'description' => $request->description,
+                'content' => json_encode($request->content),
+                'image_path' => $image_path
+            ]);
+        });
+
+        return response("Post created successfully!", 201);
     }
 
     public function edit(Request $request)
     {
         $post = $this->postModel->where("uuid", $request->uuid)->first();
 
-        $images = Storage::files("posts/" . $post->uuid);
-        dd($images);
-        foreach($images as $index => $image){
-            $images[$index] = Storage::url($image);
-        }
-
-        $payload = [
+        $payload["post"] = [
             "id" => $post->id,
             "name" => $post->name,
             "category" => $post->category,
             "description" => $post->description,
-            "content" => json_decode($post->content),
-            "images" => $images
+            "content" => json_decode($post->content)
         ];
 
         return Inertia::render("Administration/Posts/EditPost", $payload);
@@ -83,36 +77,37 @@ class PostsController extends Controller
 
     public function update(UpdatePostRequest $request, string $id)
     {
-        $post = $this->postModel->find($id);
+        DB::transaction(function () use ($request, $id) {
 
-        $post->update([
-            'name' => $request->name,
-            'category' => $request->category,
-            'description' => $request->description,
-            'content' => json_encode(explode(",", $request->content))
-        ]);
+            $post = $this->postModel->find($id);
 
-        if ($request->has("images")) {
+            $post->update([
+                'name' => $request->name,
+                'category' => $request->category,
+                'description' => $request->description,
+                'content' => json_encode($request->content)
+            ]);
 
-            Storage::disk('public')->delete("posts/$post->uuid");
-
-            foreach ($request->images as $index => $image) {
-                $image_content = file_get_contents($image);
-                $image_path = "posts/$post->uuid/img" . $index + 1 . ".png";
-                Storage::disk('public')->put($image_path, $image_content);
+            if ($request->has('image')) {
+                Storage::disk('public')->put($post->image_path, file_get_contents($request->image));
             }
-        }
+        });
 
-        return response("Post atualizado com sucesso!", 200);
+        return response("Post updated successfully!", 200);
     }
 
-    public function destroy(string $id)
+    public function destroy(Request $request)
     {
-        $post = $this->postModel->find($id);
-        $post->delete();
+        DB::transaction(function () use ($request) {
 
-        Storage::disk('public')->delete("posts/$post->uuid");
+            $posts = $this->postModel->findMany($request->ids);
 
-        return response("Post deletado com sucesso!", 200);
+            foreach ($posts as $post) {
+                $post->delete();
+                Storage::disk('public')->deleteDirectory("posts/" . $post->uuid);
+            }
+        });
+
+        return response("Posts deleted successfully!", 200);
     }
 }

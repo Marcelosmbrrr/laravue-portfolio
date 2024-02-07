@@ -22,6 +22,7 @@ class PostsResource extends ResourceCollection
 
             $this->payload["posts"][$index] = [
                 "id" => $post->id,
+                "uuid" => $post->uuid,
                 "name" => $post->name,
                 "images_url" => $images,
                 "description" => $post->description,

@@ -17,8 +17,8 @@ class UpdatePostRequest extends FormRequest
             "name" => "required|min:3|max:100",
             "description" => "required|min:3|max:100",
             "content" => "required|array",
-            "images" => "sometimes|array",
-            "category" => "required|enum:delírios,tecnologia"
+            "image" => "sometimes|image|dimensions:ratio_between=1.495:1,1.776:1",
+            "category" => "required"
         ];
     }
 }

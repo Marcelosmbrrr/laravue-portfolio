@@ -34,7 +34,7 @@
                                 class="w-full md:w-auto flex items-center justify-center py-2 px-4 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-emerald-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">
                                 Edit
                             </Link>
-                            <DeleteResource v-if="selections.length > 0" :ids="selections.map((item) => item.id)" />
+                            <DeleteResource v-if="selections.length > 0" :ids="selections.map((item) => item.id)" :url="'api/posts/delete'" @onReload="onReload" />
                             <button type="button" @click="reload = !reload"
                                 class="w-full md:w-auto flex items-center justify-center py-2 px-4 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-primary-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">
                                 <svg class="w-3 h-3 text-gray-800 dark:text-white" aria-hidden="true"
@@ -56,7 +56,6 @@
                                     <th scope="col" class="px-4 py-3">#</th>
                                     <th scope="col" class="px-4 py-3">Nome</th>
                                     <th scope="col" class="px-4 py-3">Descrição</th>
-                                    <th scope="col" class="px-4 py-3">Imagem</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -69,7 +68,6 @@
                                     </td>
                                     <td class="px-4 py-3">{{ post.name }}</td>
                                     <td class="px-4 py-3">{{ post.description }}</td>
-                                    <td class="px-4 py-3">{{ post.image_url }}</td>
                                 </tr>
                                 <tr v-else-if="!pending && posts.length === 0" class="border-b dark:border-gray-700">
                                     <td colspan="4" class="px-4 py-3 text-center">Nenhum post encontrado</td>
@@ -200,8 +198,9 @@ function onChangeLimit() {
     }
 }
 
-function onChangeOrderBy(e: any) {
-    orderBy.value = e.currentTarget.value;
+function onReload() {
+    reload.value = !reload.value;
+    selections.value = [];
 }
 
 function onNextPage() {

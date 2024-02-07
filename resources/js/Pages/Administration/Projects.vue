@@ -1,5 +1,5 @@
 <template>
-    <Head title="Projetos" />
+    <Head title="Projects" />
     <AuthenticatedLayout>
         <section class="bg-white dark:bg-gray-900 p-3 sm:p-5">
             <div class="mx-auto max-w-screen-xl px-4 lg:px-12">
@@ -124,7 +124,7 @@ import EditProject from '@/Components/Forms/Projects/EditProject.vue';
 import DeleteResource from '@/Components/Forms/Shared/DeleteResource.vue';
 
 export interface IProject {
-    id: number;
+    id: string;
     phase: string;
     name: string;
     technology: string;

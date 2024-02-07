@@ -43,8 +43,7 @@
                         </div>
                         <div>
                             <label for="technologies"
-                                class="block my-4 text-sm font-medium text-gray-900 dark:text-white">Seleção de
-                                Tecnologias</label>
+                                class="block my-4 text-sm font-medium text-gray-900 dark:text-white">Selections</label>
                             <div class="w-full h-fit flex flex-wrap gap-1 pb-3">
                                 <div v-for="icon in devIconsList" @click="iconSelection" :id="icon"
                                     class="flex justify-center items-center h-12 w-12 cursor-pointer border border-gray-500 hover:bg-emerald-400 rounded-lg"
@@ -58,6 +57,7 @@
                             <label for="technologies" class="block mt-2 text-sm font-medium text-gray-900 dark:text-white">
                                 Tecnologias Selecionadas: {{ formSchema.icon.value.length }}
                             </label>
+                            <span class="text-sm text-red-500">{{ formValidation.icon.message }}</span>
                             <div class="w-full h-fit py-2 flex flex-wrap gap-1">
                                 <div v-for="icon in formSchema.icon.value" :id="icon"
                                     class="flex justify-center items-center h-12 w-12 cursor-pointer border border-gray-500 hover:bg-emerald-400 rounded-lg"
@@ -112,9 +112,9 @@ const props = defineProps({
 });
 
 const formSchema = Vue.reactive({
-    name: { value: '', validation: 'required|min:3|max:20' },
-    description: { value: '', validation: 'required|min:10|max:100' },
-    icon: { value: [] as string[], validation: "required|min:1|max:5" }
+    name: { value: props.tech?.name, rule: 'required|min:3|max:20' },
+    description: { value: props.tech?.description, rule: 'required|min:10|max:100' },
+    icon: { value: props.tech?.icon, rule: "required|min:1|max:5" }
 })
 
 const formValidation = Vue.reactive({
@@ -135,6 +135,7 @@ async function submit() {
 
     if (formValidationResults.is_valid) {
         try {
+            pending.value = true;
             await api.patch('api/techs/' + props.tech?.id, {
                 name: formSchema.name.value,
                 description: formSchema.description.value,

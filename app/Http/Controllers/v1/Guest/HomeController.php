@@ -27,10 +27,10 @@ class HomeController extends Controller
 
         $payload = ["projects" => [], "technologies" => [], "posts" => []];
 
-        foreach($projects as $index => $project){
+        foreach ($projects as $index => $project) {
 
             $payload['projects'][$index] = [
-                "id" => $project->id, 
+                "id" => $project->id,
                 "uuid" => $project->uuid,
                 "phase" => $project->phase,
                 "name" => $project->name,
@@ -40,35 +40,49 @@ class HomeController extends Controller
                 "created_at" => $project->created_at,
                 "updated_at" => $project->updated_at
             ];
-
         }
 
-        foreach($technologies as $index => $tech){
+        foreach ($technologies as $index => $tech) {
 
             $payload['technologies'][$index] = [
-                "id" => $tech->id, 
+                "id" => $tech->id,
                 "name" => $tech->name,
                 "description" => $tech->description,
                 "icon" => json_decode($tech->icon)
             ];
-
         }
 
-        foreach($posts as $index => $post){
+        foreach ($posts as $index => $post) {
 
             $payload['posts'][$index] = [
-                "uuid" => $post->uuid, 
+                "uuid" => $post->uuid,
                 "name" => $post->name,
+                "category" => $post->category,
                 "description" => $post->description,
                 "image_src" => Storage::url($post->image_path),
             ];
-
         }
 
         return Inertia::render('Guest/Home', $payload);
     }
 
-    function postPage(Request $request){
-        // 
+    function postPage(Request $request)
+    {
+        $post = $this->postModel->where("uuid", $request->uuid)->first();
+
+        $images = Storage::disk("public")->files("posts/" . $post->uuid);
+        foreach ($images as $index => $image) {
+            $images[$index] = Storage::url($image);
+        }
+
+        $payload["post"] = [
+            "uuid" => $post->uuid,
+            "name" => $post->name,
+            "category" => $post->category,
+            "content" => json_decode($post->content),
+            "image_src" => Storage::url($post->image_path)
+        ];
+
+        return Inertia::render('Guest/Post', $payload);
     }
 }

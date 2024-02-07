@@ -17,7 +17,8 @@ class UpdateProjectRequest extends FormRequest
             "name" => "required|string",
             "phase" => "required|string",
             "description" => "required|string",
-            "technology" => "required"
+            "technology" => "required",
+            "image" => "sometimes|image|dimensions:ratio_between=1.495:1,1.776:1"
         ];
     }
 }

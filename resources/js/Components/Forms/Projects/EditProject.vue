@@ -66,9 +66,9 @@
                         <div class="sm:col-span-2">
                             <label for="description"
                                 class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Description</label>
-                            <textarea v-model="formSchema.description.value" id="description" rows="5"
+                            <input v-model="formSchema.description.value" id="description"
                                 class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-emerald-500 focus:border-emerald-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-emerald-500 dark:focus:border-emerald-500"
-                                placeholder="Write a description..."></textarea>
+                                placeholder="Write a description...">
                             <span class="text-sm text-red-500">{{ formValidation.description.message }}</span>
                         </div>
                         <ImageUpload @onUploadImage="onUploadImage" />
@@ -98,7 +98,7 @@ import ImageUpload from '../Shared/ImageUpload.vue';
 import { api } from '@/utils/Api';
 
 interface ISelectedProject {
-    id: number;
+    id: string;
     phase: string;
     name: string;
     technology: string;
@@ -111,11 +111,11 @@ const props = defineProps({
 });
 
 const formSchema = Vue.reactive({
-    name: { value: "", rule: "required|min:5" },
-    description: { value: "", rule: "required|min:20|max:100" },
-    phase: { value: false, rule: "required|match:ideia,planejamento,desenvolvimento,produção,finalizado" },
-    technology: { value: false, rule: "required" },
-    image: { value: false, rule: "sometimes|image" },
+    name: { value: props.project!.name, rule: "required|min:5" },
+    description: { value: props.project!.description, rule: "required|min:20|max:100" },
+    phase: { value: props.project!.phase, rule: "required|match:ideia,planejamento,desenvolvimento,produção,finalizado" },
+    technology: { value: props.project!.technology, rule: "required" },
+    image: { value: null, rule: "required" },
 })
 
 const formValidation = Vue.reactive({
@@ -137,15 +137,22 @@ async function submit() {
     Object.assign(formValidation, formValidationResults.results);
 
     if (formValidationResults.is_valid) {
+
+        let payload: { [key: string]: any } = {
+            name: formSchema.name.value,
+            technology: formSchema.technology.value,
+            description: formSchema.description.value,
+            phase: formSchema.phase.value,
+            _method: 'PATCH'
+        }
+
+        if (formSchema.image.value) {
+            payload.image = formSchema.image.value;
+        }
+
         try {
             pending.value = true;
-            await api.patch('api/projects/' + props.project?.id, {
-                name: formSchema.name.value,
-                description: formSchema.description.value,
-                phase: formSchema.phase.value,
-                technology: formSchema.technology.value,
-                image: formSchema.image
-            }, {
+            await api.post('api/projects/' + props.project?.id, payload, {
                 headers: {
                     'Content-Type': 'multipart/form-data'
                 },
@@ -161,10 +168,11 @@ async function submit() {
         } finally {
             pending.value = false;
         }
+
     }
 }
 
-function onUploadImage(image: any) {
-    formSchema.image.value = image;
+function onUploadImage(arr_images: any[]) {
+    formSchema.image.value = arr_images[0];
 }
 </script>

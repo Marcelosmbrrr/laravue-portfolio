@@ -35,7 +35,7 @@ class ProjectsController extends Controller
     public function store(CreateProjectRequest $request)
     {
         DB::transaction(function () use ($request) {
-
+            
             $image_path = "projects/$request->uuid/img1.png";
 
             if ($request->has('image')) {
@@ -50,7 +50,7 @@ class ProjectsController extends Controller
                 'name' => $request->name,
                 'phase' => $request->phase,
                 'description' => $request->description,
-                'technology' => json_encode(explode(",", $request->technology)),
+                'technology' => json_encode($request->technology),
                 'image_path' => $image_path
             ]);
         });
@@ -68,7 +68,7 @@ class ProjectsController extends Controller
                 'name' => $request->name,
                 'phase' => $request->phase,
                 'description' => $request->description,
-                'technology' => json_encode(explode(",", $request->technology)),
+                'technology' => json_encode($request->technology),
             ]);
 
             if ($request->has('image')) {
@@ -87,7 +87,7 @@ class ProjectsController extends Controller
 
             foreach ($project as $project) {
                 $project->delete();
-                Storage::disk('public')->delete($project->image_path);
+                Storage::disk('public')->deleteDirectory("projects/" . $project->uuid);
             }
         });
 
