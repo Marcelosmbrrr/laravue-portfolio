@@ -26,7 +26,7 @@ class ProjectsController extends Controller
         $search = request()->search ?? null;
 
         $data = $this->projectModel->when($search, function ($query) use ($search) {
-            $query->where('name', 'like', "%{$search}%")->orWhere('description', 'like', "%{$search}%");
+            $query->where("name", "like", "%{$search}%")->orWhere("description", "like", "%{$search}%");
         })->orderBy($orderBy, 'asc')->paginate($limit, ['*'], 'projects', $page);
 
         return response(new ProjectsResource($data), 200);

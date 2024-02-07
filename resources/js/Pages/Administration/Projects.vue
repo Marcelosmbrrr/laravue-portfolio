@@ -26,7 +26,7 @@
                             </form>
                         </div>
                         <div class="w-full flex justify-end gap-1">
-                            <CreateProject v-if="selections.length === 0" :openable="selections.length === 0" @onReload="onReload" />
+                            <CreateProject v-if="selections.length === 0" @onReload="onReload" />
                             <EditProject v-if="selections.length === 1" :project="selections[0]" @onReload="onReload" />
                             <DeleteResource v-if="selections.length > 0" :ids="selections.map((item) => item.id)" :url="'api/projects/delete'" @onReload="onReload" />
                             <button type="button" @click="reload = !reload"

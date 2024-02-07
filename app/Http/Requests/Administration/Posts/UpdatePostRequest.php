@@ -14,7 +14,11 @@ class UpdatePostRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            "name" => "required|min:3|max:100",
+            "description" => "required|min:3|max:100",
+            "content" => "required|array",
+            "images" => "sometimes|array",
+            "category" => "required|enum:delírios,tecnologia"
         ];
     }
 }

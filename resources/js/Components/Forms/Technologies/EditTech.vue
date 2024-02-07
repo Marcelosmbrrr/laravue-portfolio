@@ -1,6 +1,6 @@
 <template>
     <!-- Modal toggle -->
-    <button @click="onOpen" type="button"
+    <button @click="open = true" type="button"
         class="w-full md:w-auto flex items-center justify-center py-2 px-4 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-emerald-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">
         Edit
     </button>
@@ -36,10 +36,10 @@
                         <div>
                             <label for="name"
                                 class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Name</label>
-                            <input v-model="form.name.value" type="text" id="name"
+                            <input v-model="formSchema.name.value" type="text" id="name"
                                 class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-emerald-600 focus:border-emerald-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-emerald-500 dark:focus:border-emerald-500"
                                 placeholder="Type name">
-                            <span class="text-sm text-red-500">{{ formErrors.name.message }}</span>
+                            <span class="text-sm text-red-500">{{ formValidation.name.message }}</span>
                         </div>
                         <div>
                             <label for="technologies"
@@ -48,7 +48,7 @@
                             <div class="w-full h-fit flex flex-wrap gap-1 pb-3">
                                 <div v-for="icon in devIconsList" @click="iconSelection" :id="icon"
                                     class="flex justify-center items-center h-12 w-12 cursor-pointer border border-gray-500 hover:bg-emerald-400 rounded-lg"
-                                    :class="{ 'bg-emerald-400': form.icon.value.includes(icon) }">
+                                    :class="{ 'bg-emerald-400': formSchema.icon.value.includes(icon) }">
                                     <img :src="`https://cdn.jsdelivr.net/gh/devicons/devicon/icons/${icon}.svg`"
                                         class="w-8 h-8" />
                                 </div>
@@ -56,12 +56,12 @@
                         </div>
                         <div>
                             <label for="technologies" class="block mt-2 text-sm font-medium text-gray-900 dark:text-white">
-                                Tecnologias Selecionadas: {{ form.icon.value.length }}
+                                Tecnologias Selecionadas: {{ formSchema.icon.value.length }}
                             </label>
                             <div class="w-full h-fit py-2 flex flex-wrap gap-1">
-                                <div v-for="icon in form.icon.value" :id="icon"
+                                <div v-for="icon in formSchema.icon.value" :id="icon"
                                     class="flex justify-center items-center h-12 w-12 cursor-pointer border border-gray-500 hover:bg-emerald-400 rounded-lg"
-                                    :class="{ 'bg-emerald-400': form.icon.value.includes(icon) }">
+                                    :class="{ 'bg-emerald-400': formSchema.icon.value.includes(icon) }">
                                     <img :src="`https://cdn.jsdelivr.net/gh/devicons/devicon/icons/${icon}.svg`"
                                         class="w-8 h-8" />
                                 </div>
@@ -70,10 +70,10 @@
                         <div>
                             <label for="description"
                                 class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Description</label>
-                            <input v-model="form.description.value" type="text" id="description"
+                            <input v-model="formSchema.description.value" type="text" id="description"
                                 class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-emerald-500 focus:border-emerald-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-emerald-500 dark:focus:border-emerald-500"
                                 placeholder="Write a description...">
-                            <span class="text-sm text-red-500">{{ formErrors.description.message }}</span>
+                            <span class="text-sm text-red-500">{{ formValidation.description.message }}</span>
                         </div>
                     </div>
                     <div class="flex items-center space-x-4">
@@ -96,7 +96,7 @@
 import * as Vue from 'vue';
 import { defineProps, PropType, defineEmits } from 'vue';
 import { useToast } from "vue-toastification";
-import { formValidation } from '@/utils/formValidation';
+import { validateForm } from '@/utils/ValidateForm';
 import { api } from '@/utils/Api';
 import { devIconsList } from '@/utils/DevIconsList';
 
@@ -111,29 +111,17 @@ const props = defineProps({
     tech: Object as PropType<ISelectedTech>
 });
 
-interface IForm {
-    name: { value: string, validation: string };
-    description: { value: string, validation: string };
-    icon: { value: string[], validation: string };
-}
+const formSchema = Vue.reactive({
+    name: { value: '', validation: 'required|min:3|max:20' },
+    description: { value: '', validation: 'required|min:10|max:100' },
+    icon: { value: [] as string[], validation: "required|min:1|max:5" }
+})
 
-interface IFormErrors {
-    name: { error: boolean; message: string };
-    description: { error: boolean; message: string };
-    icon: { error: boolean; message: string };
-}
-
-const form = Vue.reactive<IForm>({
-    name: { value: props.tech!.name, validation: 'required|min:3' },
-    description: { value: props.tech!.description, validation: 'required|min:10' },
-    icon: { value: props.tech!.icon, validation: "required|min:1" }
-});
-
-const formErrors = Vue.reactive<IFormErrors>({
-    name: { error: false, message: '' },
-    description: { error: false, message: '' },
-    icon: { error: false, message: '' }
-});
+const formValidation = Vue.reactive({
+    name: { error: false, message: "" },
+    description: { error: false, message: "" },
+    icon: { error: false, message: "" }
+})
 
 const open = Vue.ref<boolean>(false);
 const pending = Vue.ref<boolean>(false);
@@ -141,66 +129,48 @@ const toast = useToast();
 const emit = defineEmits(['onReload']);
 
 async function submit() {
-    if (validation()) {
-        pending.value = true;
-        request();
+
+    const formValidationResults = validateForm(formSchema);
+    Object.assign(formValidation, formValidationResults.results);
+
+    if (formValidationResults.is_valid) {
+        try {
+            await api.patch('api/techs/' + props.tech?.id, {
+                name: formSchema.name.value,
+                description: formSchema.description.value,
+                icon: formSchema.icon.value
+            }, {
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                responseType: 'json'
+            });
+            toast.success('Tech created successfully!');
+            setTimeout(() => {
+                emit('onReload', null);
+                open.value = false;
+            }, 1500);
+        } catch (error) {
+            toast.error('An error occurred while creating the tech.');
+        } finally {
+            pending.value = false;
+        }
     }
-}
 
-function validation() {
-
-    let nameValidation = formValidation(form.name.value, form.name.validation);
-    let descriptionValidation = formValidation(form.description.value, form.description.validation);
-    let iconValidation = formValidation(form.icon.value, form.icon.validation);
-
-    formErrors.name = nameValidation;
-    formErrors.description = descriptionValidation;
-    formErrors.icon = iconValidation;
-
-    return !(nameValidation.error || descriptionValidation.error || iconValidation.error);
-
-}
-
-async function request() {
-    try {
-        await api.patch('api/techs/' + props.tech!.id, {
-            name: form.name.value,
-            description: form.description.value,
-            icon: form.icon.value
-        }, {
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            responseType: 'json'
-        });
-        toast.success('Tech edit successfully!');
-        setTimeout(() => {
-            emit('onReload', null);
-            open.value = false;
-        }, 1500);
-    } catch (error) {
-        toast.error('An error occurred while editing the tech.');
-    } finally {
-        pending.value = false;
-    }
 }
 
 function iconSelection(e: any) {
 
-    let clone = form.icon.value;
+    let clone = formSchema.icon.value;
     let indexOf = clone.indexOf(e.currentTarget.id); // -1 or index (0 - n)
 
-    if (form.icon.value.length === 0 || !Boolean(indexOf + 1)) {
+    if (formSchema.icon.value.length === 0 || !Boolean(indexOf + 1)) {
         clone.push(e.currentTarget.id);
-        form.icon.value = clone;
+        formSchema.icon.value = clone;
         return;
     }
 
     clone.splice(indexOf, 1);
-    form.icon.value = clone;
-}
-
-function onOpen() {
-    open.value = true;
+    formSchema.icon.value = clone;
 }
 </script>

@@ -40,23 +40,24 @@
             </nav>
         </header>
         <main class="grow px-5 bg-white dark:bg-gray-900">
-            <div class="mx-auto max-w-7xl mt-16">
+            <form @submit.prevent="submit" class="mx-auto max-w-7xl mt-16">
                 <div class="mb-5">
                     <label for="name" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Name</label>
-                    <input type="text" id="name"
+                    <input type="text" id="name" v-model="formSchema.name.value"
                         class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                         placeholder="Type post name">
                 </div>
                 <div class="mb-5">
                     <label for="description"
                         class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Description</label>
-                    <input type="text" id="description"
+                    <input type="text" id="description" v-model="formSchema.description.value"
                         class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                         placeholder="Type post description">
                 </div>
                 <div class="mb-5">
-                    <label for="countries" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Select category</label>
-                    <select id="countries"
+                    <label for="countries" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Select
+                        category</label>
+                    <select id="countries" v-model="formSchema.category.value"
                         class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                         <option selected disabled>Choose an option</option>
                         <option value="technology">Technology</option>
@@ -67,7 +68,7 @@
                     <div
                         class="w-full mb-4 border border-gray-200 rounded-lg bg-gray-50 dark:bg-gray-700 dark:border-gray-600">
                         <div class="px-4 py-2 bg-white rounded-t-lg dark:bg-gray-800">
-                            <textarea id="comment" rows="18"
+                            <textarea id="comment" rows="18" v-model="formSchema.content.value"
                                 class="w-full px-0 text-sm text-gray-900 bg-white border-0 dark:bg-gray-800 focus:ring-0 dark:text-white dark:placeholder-gray-400"
                                 placeholder="Write post content"></textarea>
                         </div>
@@ -76,23 +77,75 @@
                 <div class="mb-5">
                     <ImageUpload @onUploadImage="onUploadImage" />
                 </div>
-            </div>
+            </form>
         </main>
     </div>
 </template>
 
 <script setup lang="ts">
 import * as Vue from 'vue';
-import { Link } from '@inertiajs/vue3';
+import { Link, router } from '@inertiajs/vue3';
 import { Head } from '@inertiajs/vue3';
 import { useTheme } from '@/store/store';
+import { useToast } from "vue-toastification";
+import { validateForm } from '@/utils/ValidateForm';
 import ImageUpload from '@/Components/Forms/Shared/ImageUpload.vue';
 import TagIcon from '@/Components/Icons/TagIcon.vue';
+import { api } from '@/utils/Api';
 
-const images = Vue.ref<any[]>([]);
+const formSchema = Vue.reactive({
+    name: { value: '', validation: 'required|min:3' },
+    description: { value: '', validation: 'required|min:20|max:100' },
+    category: { value: "", validation: 'required|match:delírios,tecnologia' },
+    content: { value: [] as string[], validation: "required|array" },
+    images: { value: [] as any[], validation: "required|array" }
+})
+
+const formValidation = Vue.reactive({
+    name: { error: false, message: "" },
+    description: { error: false, message: "" },
+    category: { error: false, message: "" },
+    content: { error: false, message: "" },
+    images: { error: false, message: "" }
+})
+
 const { getTheme, toggle } = useTheme();
+const pending = Vue.ref<boolean>(false);
+const toast = useToast();
 
-function onUploadImage(image: any) {
-    //
+async function submit() {
+
+    const formValidationResults = validateForm(formSchema);
+    Object.assign(formValidation, formValidationResults.results);
+
+    if (formValidationResults.is_valid) {
+        try {
+            pending.value = true;
+            await api.post('api/projects', {
+                name: formSchema.name.value,
+                description: formSchema.description.value,
+                category: formSchema.category.value,
+                content: formSchema.content.value,
+                images: formSchema.images.value
+            }, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                },
+                responseType: 'json'
+            });
+            toast.success('Project created successfully!');
+            setTimeout(() => {
+                router.get("/posts");
+            }, 1500);
+        } catch (error) {
+            toast.error('An error occurred while creating the project.');
+        } finally {
+            pending.value = false;
+        }
+    }
+}
+
+function onUploadImage(img_array: any[]) {
+    formSchema.images.value = img_array;
 }
 </script>

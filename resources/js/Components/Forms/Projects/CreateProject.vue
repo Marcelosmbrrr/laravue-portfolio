@@ -1,6 +1,6 @@
 <template>
     <!-- Modal toggle -->
-    <button @click="onOpen" type="button"
+    <button @click="open = true" type="button"
         class="w-full md:w-auto flex items-center justify-center py-2 px-4 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-emerald-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">
         Create
     </button>
@@ -36,23 +36,23 @@
                         <div>
                             <label for="name"
                                 class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Name</label>
-                            <input v-model="form.name.value" type="text" id="name"
+                            <input v-model="formSchema.name.value" type="text" id="name"
                                 class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-emerald-600 focus:border-emerald-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-emerald-500 dark:focus:border-emerald-500"
                                 placeholder="Type name">
-                            <span class="text-sm text-red-500">{{ formErrors.name.message }}</span>
+                            <span class="text-sm text-red-500">{{ formValidation.name.message }}</span>
                         </div>
                         <div>
                             <label for="tech"
                                 class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Technology</label>
-                            <input v-model="form.technology.value" pattern="\w+(?:,\w+)*" type="text" id="tech"
+                            <input v-model="formSchema.technology.value" pattern="\w+(?:,\w+)*" type="text" id="tech"
                                 class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-emerald-600 focus:border-emerald-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-emerald-500 dark:focus:border-emerald-500"
                                 placeholder="Ex: html,css,js">
-                            <span class="text-sm text-red-500">{{ formErrors.technology.message }}</span>
+                            <span class="text-sm text-red-500">{{ formValidation.technology.message }}</span>
                         </div>
                         <div>
                             <label for="phase"
                                 class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Phase</label>
-                            <select v-model="form.phase.value" id="phase"
+                            <select v-model="formSchema.phase.value" id="phase"
                                 class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-emerald-500 focus:border-emerald-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-emerald-500 dark:focus:border-emerald-500">
                                 <option value="" disabled>Select an phase</option>
                                 <option value="ideia">Idea</option>
@@ -61,15 +61,15 @@
                                 <option value="produção">Production</option>
                                 <option value="finalizado">Finished</option>
                             </select>
-                            <span class="text-sm text-red-500">{{ formErrors.phase.message }}</span>
+                            <span class="text-sm text-red-500">{{ formValidation.phase.message }}</span>
                         </div>
                         <div class="sm:col-span-2">
                             <label for="description"
                                 class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Description</label>
-                            <textarea v-model="form.description.value" id="description" rows="5"
+                            <textarea v-model="formSchema.description.value" id="description" rows="5"
                                 class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-emerald-500 focus:border-emerald-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-emerald-500 dark:focus:border-emerald-500"
                                 placeholder="Write a description..."></textarea>
-                            <span class="text-sm text-red-500">{{ formErrors.description.message }}</span>
+                            <span class="text-sm text-red-500">{{ formValidation.description.message }}</span>
                         </div>
                         <ImageUpload @onUploadImage="onUploadImage" />
                     </div>
@@ -93,47 +93,32 @@
 import * as Vue from 'vue';
 import { defineProps, defineEmits } from 'vue';
 import { useToast } from "vue-toastification";
-import { formValidation } from '@/utils/formValidation';
+import { validateForm } from '@/utils/ValidateForm';
 import ImageUpload from '../Shared/ImageUpload.vue';
 import { api } from '@/utils/Api';
 
 const props = defineProps({
-    openable: Boolean,
     name: String,
     description: String,
     phase: String,
     technology: String,
 });
 
-interface IForm {
-    name: { value: string, validation: string };
-    description: { value: string, validation: string };
-    phase: { value: "", validation: string };
-    technology: { value: string, validation: string };
-    image?: any
-}
+const formSchema = Vue.reactive({
+    name: { value: "", rule: "required|min:5" },
+    description: { value: "", rule: "required|min:20|max:100" },
+    phase: { value: false, rule: "required|match:ideia,planejamento,desenvolvimento,produção,finalizado" },
+    technology: { value: false, rule: "required" },
+    image: { value: false, rule: "sometimes|image" },
+})
 
-interface IFormErrors {
-    name: { error: boolean; message: string };
-    description: { error: boolean; message: string };
-    phase: { error: boolean; message: string };
-    technology: { error: boolean; message: string };
-}
-
-const form = Vue.reactive<IForm>({
-    name: { value: '', validation: 'required|min:3' },
-    description: { value: '', validation: 'required|min:10' },
-    phase: { value: '', validation: "required|match:^(ideia|planejamento|desenvolvimento|produção|finalizado)$" },
-    technology: { value: '', validation: 'required|min:1' },
-    image: null
-});
-
-const formErrors = Vue.reactive<IFormErrors>({
-    name: { error: false, message: '' },
-    description: { error: false, message: '' },
-    phase: { error: false, message: '' },
-    technology: { error: false, message: '' }
-});
+const formValidation = Vue.reactive({
+    name: { error: false, message: "" },
+    description: { error: false, message: "" },
+    phase: { error: false, message: "" },
+    technology: { error: false, message: "" },
+    image: { error: false, message: "" },
+})
 
 const open = Vue.ref<boolean>(false);
 const pending = Vue.ref<boolean>(false);
@@ -141,61 +126,39 @@ const toast = useToast();
 const emit = defineEmits(['onReload']);
 
 async function submit() {
-    if (validation()) {
-        pending.value = true;
-        request();
-    }
-}
 
-function validation() {
+    const formValidationResults = validateForm(formSchema);
+    Object.assign(formValidation, formValidationResults.results);
 
-    let nameValidation = formValidation(form.name.value, form.name.validation);
-    let descriptionValidation = formValidation(form.description.value, form.description.validation);
-    let phaseValidation = formValidation(form.phase.value, form.phase.validation);
-    let technologyValidation = formValidation(form.technology.value, form.technology.validation);
-
-    formErrors.name = nameValidation;
-    formErrors.description = descriptionValidation;
-    formErrors.phase = phaseValidation;
-    formErrors.technology = technologyValidation;
-
-    return !(nameValidation.error || descriptionValidation.error || phaseValidation.error || technologyValidation.error);
-
-}
-
-async function request() {
-    try {
-        await api.post('api/projects', {
-            name: form.name.value,
-            description: form.description.value,
-            phase: form.phase.value,
-            technology: form.technology.value,
-            image: form.image
-        }, {
-            headers: {
-                'Content-Type': 'multipart/form-data'
-            },
-            responseType: 'json'
-        });
-        toast.success('Project created successfully!');
-        setTimeout(() => {
-            emit('onReload', null);
-            open.value = false;
-        }, 1500);
-    } catch (error) {
-        toast.error('An error occurred while creating the project.');
-    } finally {
-        pending.value = false;
-    }
-}
-
-function onOpen() {
-    if (props.openable) {
-        open.value = true;
+    if (formValidationResults.is_valid) {
+        try {
+            pending.value = true;
+            await api.post('api/projects', {
+                name: formSchema.name.value,
+                description: formSchema.description.value,
+                phase: formSchema.phase.value,
+                technology: formSchema.technology.value,
+                image: formSchema.image
+            }, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                },
+                responseType: 'json'
+            });
+            toast.success('Project created successfully!');
+            setTimeout(() => {
+                emit('onReload', null);
+                open.value = false;
+            }, 1500);
+        } catch (error) {
+            toast.error('An error occurred while creating the project.');
+        } finally {
+            pending.value = false;
+        }
     }
 }
 
 function onUploadImage(image: any) {
-    form.image = image;
+    formSchema.image.value = image;
 }
 </script>

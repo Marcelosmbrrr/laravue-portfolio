@@ -26,7 +26,7 @@
                             </form>
                         </div>
                         <div class="w-full flex justify-end gap-1">
-                            <CreateTech v-if="selections.length === 0" :openable="selections.length === 0" @onReload="onReload" />
+                            <CreateTech v-if="selections.length === 0" @onReload="onReload" />
                             <EditTech v-if="selections.length === 1" :tech="selections[0]" @onReload="onReload" />
                             <DeleteResource v-if="selections.length > 0" :ids="selections.map((item) => item.id)" :url="'api/techs/delete'" @onReload="onReload" />
                             <button type="button" @click="reload = !reload"

@@ -3,7 +3,8 @@
     <section class="bg-gray-50 dark:bg-gray-900">
 
         <div class="absolute top-5 right-5">
-            <div v-if="getTheme() === 'dark'" class="text-gray-800 dark:text-white dark:hover:text-emerald-500 cursor-pointer">
+            <div v-if="getTheme() === 'dark'"
+                class="text-gray-800 dark:text-white dark:hover:text-emerald-500 cursor-pointer">
                 <svg @click="toggle" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"
                     class="w-6 h-6">
                     <path
@@ -37,22 +38,22 @@
                         <div>
                             <label for="username" class="block mb-2 text-sm font-medium text-gray-900">Nome de
                                 Usuário</label>
-                            <input type="text" name="username" id="username" v-model="form.username.value"
+                            <input type="text" name="username" id="username" v-model="formSchema.username.value"
                                 placeholder="Informe o nome de usuário"
                                 class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-emerald-600 focus:border-emerald-600 block w-full p-2.5">
-                            <span class="text-sm text-red-500">{{ formErrors.username.message }}</span>
+                            <span class="text-sm text-red-500">{{ formValidation.username.message }}</span>
                         </div>
                         <div>
                             <label for="password" class="block mb-2 text-sm font-medium text-gray-900">Senha</label>
-                            <input type="password" name="password" id="password" v-model="form.password.value"
+                            <input type="password" name="password" id="password" v-model="formSchema.password.value"
                                 placeholder="••••••••"
                                 class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-emerald-600 focus:border-emerald-600 block w-full p-2.5">
-                            <span class="text-sm text-red-500">{{ formErrors.password.message }}</span>
+                            <span class="text-sm text-red-500">{{ formValidation.password.message }}</span>
                         </div>
                         <div class="flex items-center justify-between">
                             <div class="flex items-start">
                                 <div class="flex items-center h-5">
-                                    <input id="remember" type="checkbox" v-model="form.remember"
+                                    <input id="remember" type="checkbox" v-model="formSchema.remember.value"
                                         class="w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-emerald-300">
                                 </div>
                                 <div class="ml-3 text-sm">
@@ -78,29 +79,19 @@ import { useToast } from "vue-toastification";
 import { useAuth } from '@/store/store';
 import { useTheme } from '@/store/store';
 import TagIcon from '@/Components/Icons/TagIcon.vue';
-import { formValidation } from '@/utils/formValidation';
+import { validateForm } from '@/utils/ValidateForm';
 
-interface IForm {
-    username: { value: string, validation: string };
-    password: { value: string, validation: string };
-    remember: boolean;
-}
+const formSchema = Vue.reactive({
+    username: { value: "", rule: "required" },
+    password: { value: "", rule: "required" },
+    remember: { value: false, rule: "required|boolean" }
+})
 
-interface IFormErrors {
-    username: { error: boolean; message: string };
-    password: { error: boolean; message: string };
-}
-
-const form = Vue.reactive<IForm>({
-    username: { value: '', validation: 'required' },
-    password: { value: '', validation: 'required' },
-    remember: false,
-});
-
-const formErrors = Vue.reactive<IFormErrors>({
-    username: { error: false, message: '' },
-    password: { error: false, message: '' },
-});
+const formValidation = Vue.reactive({
+    username: { error: false, message: "" },
+    password: { error: false, message: "" },
+    remember: { error: false, message: "" }
+})
 
 const { login } = useAuth();
 const { getTheme, toggle } = useTheme();
@@ -109,28 +100,23 @@ const toast = useToast();
 
 async function submit() {
 
-    let emailValidation = formValidation(form.username.value, form.username.validation);
-    let passwordValidation = formValidation(form.password.value, form.password.validation);
+    const formValidationResults = validateForm(formSchema);
+    Object.assign(formValidation, formValidationResults.results);
 
-    formErrors.username = emailValidation;
-    formErrors.password = passwordValidation;
-
-    if (emailValidation.error || passwordValidation.error) {
-        return;
+    if (formValidationResults.is_valid) {
+        try {
+            pending.value = true;
+            await login({
+                username: formSchema.username.value,
+                password: formSchema.password.value,
+                remember: formSchema.remember.value
+            });
+        } catch (e) {
+            pending.value = false;
+            requestError(e);
+        }
     }
 
-    requestServer();
-
-}
-
-async function requestServer() {
-    try {
-        pending.value = true;
-        await login({ username: form.username.value, password: form.password.value, remember: form.remember });
-    } catch (e) {
-        pending.value = false;
-        requestError(e);
-    }
 }
 
 function requestError(e: any) {

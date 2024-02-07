@@ -15,10 +15,15 @@ class PostsResource extends ResourceCollection
         $this->payload["posts"] = [];
         foreach ($this->collection as $index => $post) {
 
+            $images = Storage::files("posts/" . $post->uuid);
+            foreach ($images as $index => $image) {
+                $images[$index] = Storage::url($image);
+            }
+
             $this->payload["posts"][$index] = [
                 "id" => $post->id,
                 "name" => $post->name,
-                "image_url" => Storage::disk('public')->url("images/posts/" . $post->uuid . ".png"),
+                "images_url" => $images,
                 "description" => $post->description,
                 "content" => json_decode($post->content),
                 "created_at" => $post->created_at,

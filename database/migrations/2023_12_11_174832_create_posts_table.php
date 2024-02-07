@@ -18,7 +18,6 @@ return new class extends Migration
             $table->string('descripton');
             $table->json('content');
             $table->enum('category', ['delírios', 'tecnologia']);
-            $table->string("image_path");
             $table->timestamps();
         });
     }

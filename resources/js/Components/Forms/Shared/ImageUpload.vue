@@ -28,10 +28,14 @@ const emit = defineEmits(['onUploadImage']);
 const image = Vue.ref<string | null>(null);
 
 function onChange(e: any) {
-    const uploaded_file = e.currentTarget.files[0];
-    if (uploaded_file && uploaded_file.type.startsWith('image/')) {
-        image.value = URL.createObjectURL(uploaded_file);
-        emit('onUploadImage', uploaded_file);
+    if (e.currentTarget.files.length > 0) {
+        const images: any[] = e.currentTarget.files;
+        const imagesURL: any[] = images.map((image) => {
+            if (image && image.type.startsWith('image/')) {
+                return URL.createObjectURL(image);
+            }
+        });
+        emit('onUploadImage', imagesURL);
     }
 }
 
