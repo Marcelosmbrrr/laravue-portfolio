@@ -43,7 +43,7 @@
                         </div>
                         <div>
                             <label for="technologies"
-                                class="block my-4 text-sm font-medium text-gray-900 dark:text-white">Selections</label>
+                                class="block my-4 text-sm font-medium text-gray-900 dark:text-white">Icons selection</label>
                             <div class="w-full h-fit flex flex-wrap gap-1 pb-3">
                                 <div v-for="icon in devIconsList" @click="iconSelection" :id="icon"
                                     class="flex justify-center items-center h-12 w-12 cursor-pointer border border-gray-500 hover:bg-emerald-400 rounded-lg"
@@ -55,7 +55,7 @@
                         </div>
                         <div>
                             <label for="technologies" class="block mt-2 text-sm font-medium text-gray-900 dark:text-white">
-                                Tecnologias Selecionadas: {{ formSchema.icon.value.length }}
+                                Selections: {{ formSchema.icon.value.length }}
                             </label>
                             <span class="text-sm text-red-500">{{ formValidation.icon.message }}</span>
                             <div class="w-full h-fit py-2 flex flex-wrap gap-1">
@@ -83,7 +83,7 @@
                         </button>
                         <button @click="open = false" type="button"
                             class="text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm px-5 py-2.5 me-2 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700">
-                            Cancelar
+                            Cancel
                         </button>
                     </div>
                 </form>

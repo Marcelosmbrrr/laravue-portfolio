@@ -28,12 +28,12 @@ class TechnologySeeder extends Seeder
             [
                 "name" => "PHP",
                 "description" => "Cerca de 2 anos de experiência com PHP e Laravel.",
-                "icon" => json_encode(["php/php-original", "laravel/laravel-plain"])
+                "icon" => json_encode(["php/php-original", "laravel/laravel-original"])
             ],
             [
                 "name" => "NodeJS",
                 "description" => "Conhecimento de NodeJS e desenvolvimento de apis com Express, NestJS e AdonisJs.",
-                "icon" => json_encode(["nodejs/nodejs-original", "express/express-original", "nestjs/nestjs-plain", "adonisjs/adonisjs-original"])
+                "icon" => json_encode(["nodejs/nodejs-original", "express/express-original", "nestjs/nestjs-original", "adonisjs/adonisjs-original"])
             ],
             [
                 "name" => "Banco de Dados",
@@ -43,7 +43,7 @@ class TechnologySeeder extends Seeder
             [
                 "name" => "DevOps",
                 "description" => "Conhecimento em Docker, CI/CD com Github Actions e Cloud Hosting com AWS e Digital Ocean.",
-                "icon" => json_encode(["docker/docker-original", "amazonwebservices/amazonwebservices-original", "digitalocean/digitalocean-original"])
+                "icon" => json_encode(["docker/docker-original", "amazonwebservices/amazonwebservices-plain-wordmark", "digitalocean/digitalocean-original"])
             ],
         ]);
     }
